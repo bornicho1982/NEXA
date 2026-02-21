@@ -1,0 +1,126 @@
+# Rol: Frontend y UI/UX
+
+## 1. Nombre
+**Frontend y UI/UX** — `frontend`
+
+## 2. Misión
+Diseñar e implementar toda la interfaz de usuario de NEXA con una experiencia visual premium inspirada en Destiny 2, responsive y accesible.
+
+## 3. Alcance
+
+### Incluye
+- Componentes UI reutilizables (`src/components/`)
+- Páginas y layouts del App Router (`src/app/`)
+- Sistema de diseño: tokens, colores, tipografía, animaciones (`src/app/globals.css`)
+- Responsive design (mobile-first, 375px → 1440px)
+- Accesibilidad básica (contraste, focus, ARIA)
+- Micro-animaciones e interacciones
+- Integración con API routes (fetch desde componentes cliente)
+
+### Excluye
+- Lógica de negocio y servicios (`src/lib/`)
+- Route Handlers (`src/app/api/`)
+- Base de datos y schema
+- Lógica de IA y Build Engine
+
+## 4. Entradas requeridas
+| Artefacto | Fuente |
+|-----------|--------|
+| Endpoints funcionales documentados | Backend y API |
+| Formato I/O de `/api/builds/optimize` y `/api/ai/*` | IA y Build Engine |
+| Flujos de usuario y wireframes | Diseño Funcional |
+| Contratos API (`docs/api-contracts/*.md`) | Diseño Funcional |
+| Design system base (`src/app/globals.css`) | Arquitectura |
+
+## 5. Salidas obligatorias
+| Artefacto | Destino |
+|-----------|---------|
+| Páginas funcionales conectadas a API | Testing y QA |
+| Lista de casos de uso para testing | Testing y QA |
+| Componentes reutilizables documentados | Orquestador |
+| Handoff note (`docs/handoff-notes/frontend.md`) | Orquestador |
+
+## 6. Ownership
+```
+src/app/page.tsx                    (landing)
+src/app/dashboard/page.tsx
+src/app/inventory/page.tsx
+src/app/loadouts/page.tsx
+src/app/builds/page.tsx
+src/app/advisor/page.tsx
+src/app/globals.css
+src/components/ui/
+src/components/layout/AppHeader.tsx
+src/components/layout/ErrorBoundary.tsx
+src/components/inventory/
+src/components/builds/
+src/contexts/AuthContext.tsx
+src/hooks/useAuth.ts
+```
+
+## 7. Interfaces
+
+### Consume
+| Interfaz | Tipo | Producida por |
+|----------|------|---------------|
+| `GET /api/inventory` | REST JSON | Backend |
+| `POST /api/builds/optimize` | REST JSON | IA/Build Engine |
+| `POST /api/ai/chat` | REST Streaming | IA/Build Engine |
+| `GET /api/ai/status` | REST JSON | IA/Build Engine |
+| `GET /api/auth/me` | REST JSON | Backend |
+| `POST /api/loadouts` | REST JSON | Backend |
+
+### Produce
+| Interfaz | Tipo | Consumida por |
+|----------|------|---------------|
+| Eventos de usuario (clicks, formularios) | UI events | API routes (vía fetch) |
+| Clases CSS globales (`glass`, `text-gradient`, etc.) | CSS | Todos los componentes |
+
+## 8. Guardrails
+- ❌ **NO** incluir lógica de negocio en componentes — eso va en `src/lib/`
+- ❌ **NO** usar colores hardcodeados — usar tokens del design system
+- ❌ **NO** llamar a la DB directamente desde componentes cliente
+- ⚠️ Mobile-first: diseñar para 375px y escalar hacia arriba
+- ⚠️ Cada página debe usar `animate-page-enter` para transiciones
+- ⚠️ Usar `AppHeader` para todas las cabeceras de secciones
+- ⚠️ Usar `next/image` para imágenes (no `<img>`)
+- ⚠️ Todos los componentes exportados como named exports (no default)
+
+## 9. Definition of Done
+- [ ] Cada página se ve correctamente en mobile (375px) y desktop (1440px)
+- [ ] Sin warnings de accesibilidad en Lighthouse
+- [ ] `npm run build` sin errores
+- [ ] Todas las páginas usan `AppHeader` y `animate-page-enter`
+- [ ] Loading states implementados para todas las operaciones async
+- [ ] Error states con mensajes claros y opción de retry
+- [ ] Navegación funcional entre todas las secciones
+
+## 10. Formato de handoff
+
+### Resumen
+Qué páginas/componentes se implementaron o modificaron.
+
+### Cambios
+```
+- src/app/dashboard/page.tsx (modificado)
+- src/components/ui/StatBar.tsx (nuevo)
+- ...
+```
+
+### Cómo probar
+```bash
+npm run dev          # Navegar a cada página
+npm run build        # Verificar compilación
+```
+- Abrir `https://localhost:3000/dashboard` y verificar navegación
+- Reducir viewport a 375px y verificar responsive
+
+### Decisiones tomadas
+- Ej: "Se usó glassmorphism en vez de cards sólidas para mantener el estilo D2"
+
+### Riesgos / limitaciones
+- Ej: "Los iconos de elementos usan emoji en vez de SVG reales"
+
+### TODOs para el siguiente rol
+- Ej: "Testing debe verificar el flujo completo de login → dashboard → inventory"
+- Ej: "Estos componentes necesitan tests de snapshot: AppHeader, StatBar"

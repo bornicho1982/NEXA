@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  /* 🌑 Midnight Protocol Surfaces (RaidHub Aesthetic) */
+  --color-bg-primary: #030712;
+  /* Deepest Rich Black */
+  --color-bg-secondary: #0f172a;
+  /* Dark Blue-Grey (Sidebar/Cards) */
+  --color-bg-tertiary: #1e293b;
+  /* Lighter Grey for interactions */
+
+  /* 💎 Glassmorphism */
+  --color-glass-surface: rgba(255, 255, 255, 0.03);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  /* Crisp, subtle border */
+  --color-glass-highlight: rgba(255, 255, 255, 0.1);
+
+  /* ⚡ Neon Accents */
+  --color-gold-primary: #f97316;
+  /* Solar Orange (Neon) */
+  --color-gold-secondary: #fdba74;
+  /* Soft Orange */
+  --color-teal-accent: #14b8a6;
+  /* Arc/Stasis Teal (Neon) */
+  --color-void-accent: #a855f7;
+  /* Void Purple */
+
+  /* ✒️ Typography */
+  --color-text-primary: #f8fafc;
+  /* White (High Contrast) */
+  --color-text-secondary: #94a3b8;
+  /* Muted Blue-Grey */
+  --color-text-tertiary: #64748b;
+  /* Darker Grey */
+
+  /* 🛡️ Status */
+  --color-status-success: #22c55e;
+  --color-status-warning: #eab308;
+  --color-status-error: #ef4444;
+
+  /* 🖼️ Borders */
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-medium: rgba(255, 255, 255, 0.15);
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.4s ease-out;
+  --animate-slide-up: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-glow-pulse: glowPulse 3s infinite ease-in-out;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes glowPulse {
+
+    0%,
+    100% {
+      opacity: 0.6;
+      filter: brightness(1);
+    }
+
+    50% {
+      opacity: 1;
+      filter: brightness(1.2);
+    }
+  }
+}
+
+/* 
+  🚀 NEXA Utility Classes (RaidHub Style) 
+*/
+
+@utility nexa-glass {
+  @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl;
+}
+
+@utility nexa-glass-hover {
+  @apply hover:bg-white/10 hover:border-white/20 transition-all duration-300;
+}
+
+@utility nexa-card {
+  @apply nexa-glass rounded-xl overflow-hidden;
+}
+
+@utility nexa-sidebar {
+  @apply bg-[#050510]/90 backdrop-blur-2xl border-r border-white/5;
+}
+
+/* Global Reset */
+html,
+body {
+  height: 100%;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}

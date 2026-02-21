@@ -1,0 +1,133 @@
+# Rol: Testing y QA
+
+## 1. Nombre
+
+**Testing y QA** — `testing`
+
+## 2. Misión
+Asegurar la calidad del código mediante pruebas automatizadas, revisión de bugs y validación de funcionalidades contra los criterios de aceptación.
+
+## 3. Alcance
+
+### Incluye
+- Tests unitarios para servicios en `src/lib/`
+- Tests de integración para Route Handlers en `src/app/api/`
+- Tests E2E para flujos de usuario completos (si aplica)
+- Validación de `npm run build` y `npm run lint`
+- Auditorías de Lighthouse (performance, PWA, accesibilidad)
+- Verificación responsive en múltiples resoluciones
+- Detección y reporte de bugs con pasos reproducibles
+
+### Excluye
+- Implementación de features nuevas
+- Corrección directa de bugs (reporta → rol correspondiente arregla)
+- Diseño visual o arquitectura
+
+## 4. Entradas requeridas
+| Artefacto | Fuente |
+|-----------|--------|
+| Todos los módulos implementados | Arquitectura, Backend, IA, Frontend |
+| Historias de usuario y criterios de aceptación | Diseño Funcional |
+| Lista de casos de uso y flujos | Frontend |
+| Documentación de endpoints | Backend, IA |
+
+## 5. Salidas obligatorias
+| Artefacto | Destino |
+|-----------|---------|
+| Suite de tests (`__tests__/`, `e2e/`) | Repositorio |
+| Informe de bugs y regresiones | Rol afectado (vía Orquestador) |
+| Señal de release (✅ OK / 🔄 Volver a rol X) | Orquestador |
+| `docs/handoffs/testing_<yyyymmdd-hhmm>.md` | Orquestador |
+
+## 6. Ownership
+```
+__tests__/
+  src/lib/
+    bungie/client.test.ts
+    inventory/service.test.ts
+    loadouts/service.test.ts
+    builds/engine.test.ts
+    ai/client.test.ts
+    ai/service.test.ts
+  api/
+    auth.test.ts
+    inventory.test.ts
+    loadouts.test.ts
+    builds.test.ts
+    ai.test.ts
+e2e/                        (si se implementa Playwright)
+  login.spec.ts
+  inventory.spec.ts
+  builds.spec.ts
+jest.config.ts              (o vitest.config.ts)
+playwright.config.ts        (si aplica)
+```
+
+## 7. Interfaces
+
+### Consume
+| Interfaz | Tipo | Producida por |
+|----------|------|---------------|
+| Todos los endpoints de API | REST | Backend, IA |
+| Todas las páginas del app | HTML/React | Frontend |
+| Criterios de aceptación | Markdown | Diseño Funcional |
+| Componentes UI | React components | Frontend |
+
+### Produce
+| Interfaz | Tipo | Consumida por |
+|----------|------|---------------|
+| Cobertura de tests (%) | Reporte | Orquestador |
+| Lista de bugs con severidad | Markdown | Orquestador → Rol afectado |
+| Señal de release | Flag | Orquestador |
+
+## 8. Guardrails
+- ❌ **NO** corregir bugs directamente — solo reportar al rol correspondiente
+- ❌ **NO** depender de servicios externos en tests unitarios (mockear Bungie API)
+- ❌ **NO** usar datos reales de usuarios en tests
+- ⚠️ Tests deben ser deterministas (no depender de red/hora/estado mutable)
+- ⚠️ Verificar en Chrome y Firefox como mínimo
+- ⚠️ Cada bug debe incluir: pasos, resultado esperado, resultado actual, severidad
+- ⚠️ Tests E2E opcionales en MVP — obligatorios en v1
+
+## 9. Definition of Done
+- [ ] Tests unitarios escritos para todos los servicios en `src/lib/`
+- [ ] Tests de integración para los endpoints críticos (auth, inventory, builds)
+- [ ] Todos los tests existentes pasan
+- [ ] Cobertura mínima: 60% lines en src/lib/builds + src/lib/bungie (MVP)
+- [ ] E2E smoke: 1-2 flujos principales (login mock + inventory page render)
+- [ ] `npm run build` sin errores ni warnings críticos
+- [ ] `npm run lint` limpio
+- [ ] Sin regresiones en funcionalidades existentes
+- [ ] Bugs reportados con formato estandarizado
+- [ ] Señal de release emitida al Orquestador
+
+## 10. Formato de handoff
+
+### Resumen
+Qué se probó, resultados generales, señal de release.
+
+### Cambios
+```
+- __tests__/lib/builds/engine.test.ts (nuevo)
+- __tests__/api/auth.test.ts (nuevo)
+- ...
+```
+
+### Cómo probar
+```bash
+npm test                  # Todos los tests
+npm test -- --coverage    # Con cobertura
+npx playwright test       # E2E (si aplica)
+npm run build             # Verificación final
+```
+
+### Decisiones tomadas
+- Ej: "Se eligió Vitest sobre Jest por velocidad con TypeScript"
+
+### Riesgos / limitaciones
+- Ej: "No se pueden testear flujos de Bungie OAuth sin mock server"
+- Ej: "Tests E2E no cubren flujo de AI chat (requiere Ollama activo)"
+
+### TODOs para el siguiente rol
+- Ej: "Orquestador: 3 bugs críticos en Backend, redirigir al rol para corrección"
+- Ej: "Release bloqueado hasta corregir: token refresh falla con tokens expirados"

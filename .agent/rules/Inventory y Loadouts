@@ -1,0 +1,153 @@
+# Rol: Inventory & Loadouts Domain
+
+## 1. Nombre
+
+**Inventory & Loadouts Domain** — `inventory`
+
+## 2. Misión
+
+Implementar y mantener la lógica de dominio para inventario del jugador y loadouts: servicios, endpoints y tipos necesarios para obtener, transformar, equipar y gestionar items y configuraciones de equipo.
+
+## 3. Alcance
+
+### Incluye
+
+- Servicio de inventario (`src/lib/inventory/service.ts`): fetch, filtro, enriquecimiento de items
+- Servicio de loadouts (`src/lib/loadouts/service.ts`): CRUD, equipar, compartir
+- Route Handlers de inventario (`src/app/api/inventory/route.ts`, `src/app/api/inventory/actions/route.ts`)
+- Route Handler de loadouts (`src/app/api/loadouts/route.ts`)
+- Tipos de dominio: `InventoryItem`, `LoadoutConfig`, `BucketDefinition`
+- Transformación de datos crudos de Bungie a modelos internos tipados
+- Lógica de equipar/mover items vía Bungie API
+
+### Excluye
+
+- Descarga/caché del Manifest (→ Manifest & Data Modeling)
+- Motor de optimización de builds (→ Build Engine)
+- Explicaciones IA de loadouts (→ AI Advisor)
+- UI de inventario/loadouts (→ Frontend)
+- Auth y sesiones (→ Backend)
+- Cliente HTTP base de Bungie (→ Backend)
+
+## 4. Entradas requeridas
+
+| Artefacto | Fuente |
+|-----------|--------|
+| Cliente HTTP de Bungie (`src/lib/bungie/client.ts`) | Backend |
+| Session service (`src/lib/session.ts`) | Backend |
+| Manifest definitions (`getManifestDefinition()`) | Manifest & Data Modeling |
+| Prisma client y schema (User, Loadout, LoadoutItem) | Arquitectura |
+| Contratos API de inventario y loadouts | Producto |
+
+## 5. Salidas obligatorias
+
+| Artefacto | Destino |
+|-----------|---------|
+| `src/lib/inventory/service.ts` estable | Build Engine, Frontend |
+| `src/lib/loadouts/service.ts` estable | Frontend |
+| `src/app/api/inventory/route.ts` funcional | Frontend |
+| `src/app/api/inventory/actions/route.ts` funcional | Frontend |
+| `src/app/api/loadouts/route.ts` funcional | Frontend |
+| Tipos exportados: `InventoryItem`, `LoadoutConfig` | Build Engine, AI Advisor, Frontend |
+| `docs/handoffs/inventory_<yyyymmdd-hhmm>.md` | Orquestador |
+
+## 6. Ownership
+
+```
+src/lib/inventory/service.ts
+src/lib/loadouts/service.ts
+src/app/api/inventory/route.ts
+src/app/api/inventory/actions/route.ts
+src/app/api/loadouts/route.ts
+src/types/inventory.ts                  (si se separan tipos)
+```
+
+## 7. Interfaces
+
+### Produce
+
+| Interfaz | Tipo | Consumida por |
+|----------|------|---------------|
+| `GET /api/inventory` | REST JSON | Frontend, Build Engine, AI Advisor |
+| `POST /api/inventory/actions` | REST JSON | Frontend |
+| `GET /api/loadouts` | REST JSON | Frontend |
+| `POST /api/loadouts` | REST JSON | Frontend |
+| `DELETE /api/loadouts` | REST JSON | Frontend |
+| `getInventory(membershipType, membershipId, accessToken)` | TS function | Build Engine (server-side) |
+| `InventoryItem`, `LoadoutConfig` | TS types | Build Engine, AI Advisor, Frontend |
+
+### Consume
+
+| Interfaz | Tipo | Producida por |
+|----------|------|---------------|
+| `bungieClient.get()` / `bungieClient.post()` | TS module | Backend |
+| `getSession()` | TS function | Backend |
+| `getManifestDefinition(type, hash)` | TS function | Manifest |
+| Prisma Client (`prisma.loadout.*`, `prisma.user.*`) | TS module | Arquitectura |
+| Bungie API: `GetProfile`, `TransferItem`, `EquipItem` | REST | bungie.net |
+
+## 8. Guardrails
+
+- ❌ **NO** almacenar inventario completo en DB — siempre fetch live de Bungie
+- ❌ **NO** mutar items sin confirmar respuesta OK de Bungie API
+- ❌ **NO** exponer tokens del usuario en respuestas de inventario
+- ⚠️ Respetar rate limits de Bungie (1 req/seg para transferencias)
+- ⚠️ Enriquecer items con definiciones del Manifest (no devolver solo hashes)
+- ⚠️ Validar que el item pertenece al usuario antes de equipar/mover
+- ⚠️ Loadouts en DB deben cascadear deletes (LoadoutItem → Loadout)
+- ⚠️ Manejar inventario vacío / personaje sin armadura correctamente
+
+## 9. Definition of Done
+
+- [ ] `/api/inventory` devuelve items enriquecidos con nombre, icono, stats
+- [ ] `/api/inventory/actions` permite equipar y transferir items
+- [ ] `/api/loadouts` CRUD completo funcional (GET, POST, DELETE)
+- [ ] Items filtrados por tipo de personaje correctamente
+- [ ] Tipos `InventoryItem` y `LoadoutConfig` exportados y usados consistentemente
+- [ ] Edge cases: inventario vacío, personaje sin armadura, item ya equipado
+- [ ] `npm run build` sin errores
+- [ ] Handoff generado en `docs/handoffs/`
+
+## 10. Formato de handoff
+
+> Archivo: `docs/handoffs/inventory_<yyyymmdd-hhmm>.md`
+
+### Resumen
+
+Estado de los servicios de inventario y loadouts: qué funciona, qué falta.
+
+### Cambios
+
+```
+- src/lib/inventory/service.ts (nuevo/modificado)
+- src/lib/loadouts/service.ts (nuevo/modificado)
+- src/app/api/inventory/route.ts (nuevo/modificado)
+- src/app/api/loadouts/route.ts (nuevo/modificado)
+```
+
+### Cómo probar
+
+```bash
+npm run dev
+# Inventario (requiere auth):
+curl -b cookies.txt https://localhost:3000/api/inventory
+# Loadouts:
+curl -b cookies.txt https://localhost:3000/api/loadouts
+# Crear loadout:
+curl -X POST -b cookies.txt -H 'Content-Type: application/json' \
+  https://localhost:3000/api/loadouts \
+  -d '{"name":"Test Build","classType":0,"items":[]}'
+```
+
+### Decisiones tomadas
+
+- Ej: "Se enriquecen items en el servidor, no en el cliente, para reducir payload"
+
+### Riesgos / limitaciones
+
+- Ej: "Transferencias de items no están testeadas con inventario lleno"
+
+### TODOs para el siguiente rol
+
+- Ej: "Build Engine debe usar `getInventory()` para obtener armadura"
+- Ej: "Frontend debe mapear `InventoryItem[]` a la grid de inventario"

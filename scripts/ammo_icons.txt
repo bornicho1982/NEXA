@@ -1,0 +1,9 @@
+--- AMMO ICONS ---
+Primary: /common/destiny2_content/icons/56761c8361e33a367c6fa94f397d8692.png
+Special: /common/destiny2_content/icons/35e9d5635599be5c0fc306732f881459.png
+Heavy: /common/destiny2_content/icons/fdcbb78db8f38cec62ec7ca2dbab12cc.png
+
+--- CRAFTING ICONS ---
+Harmonic: /common/destiny2_content/icons/0934a0b4317a3d9e450c0c9b6998040b.png
+Alloy: /common/destiny2_content/icons/b4d6dbc8eda17711bfb8fedb6e48cc80.jpg
+Harmonizer: /common/destiny2_content/icons/e816fd6ecf653de012dfc52087d8d1d9.jpg

@@ -1,0 +1,128 @@
+# Rol: Producto y Specs Funcionales
+
+## 1. Nombre
+
+**Producto y Specs Funcionales** — `product`
+
+## 2. Misión
+
+Definir qué hace la aplicación a nivel funcional — features, MVP scope, flujos de usuario y contratos de API — para que Backend y Frontend implementen contra especificaciones claras y verificables.
+
+## 3. Alcance
+
+### Incluye
+
+- Definición y priorización de features (`docs/features.md`)
+- Historias de usuario con criterios de aceptación
+- Flujos de usuario con happy path y edge cases (`docs/user-flows/*.md`)
+- Contratos de API request/response (`docs/api-contracts/*.md`)
+- Definición de MVP vs v1 vs futuro
+- Mapa de pantallas y navegación
+
+### Excluye
+
+- Implementación de código (Backend, Frontend, IA)
+- Diseño visual detallado (colores, tipografía → Frontend)
+- Configuración técnica (→ Arquitectura)
+- Escritura de tests (→ Testing)
+
+## 4. Entradas requeridas
+
+| Artefacto | Fuente |
+|-----------|--------|
+| Visión del producto y requisitos del usuario | Stakeholder / usuario |
+| Feedback de Testing/QA sobre usabilidad | Testing y QA |
+| Conocimiento del dominio (Destiny 2, mecánicas) | Documentación Bungie |
+| Estado actual del proyecto | Orquestador |
+
+## 5. Salidas obligatorias
+
+| Artefacto | Destino |
+|-----------|---------|
+| `docs/features.md` — lista priorizada | Orquestador, todos los roles |
+| `docs/user-flows/*.md` — flujos de usuario | Frontend, Testing |
+| `docs/api-contracts/*.md` — contratos API | Backend, IA, Frontend |
+| `docs/handoffs/product_<yyyymmdd-hhmm>.md` | Orquestador |
+
+## 6. Ownership
+
+```
+docs/features.md
+docs/user-flows/
+docs/api-contracts/
+```
+
+## 7. Interfaces
+
+### Produce
+
+| Interfaz | Tipo | Consumida por |
+|----------|------|---------------|
+| Feature specs con criterios de aceptación | Markdown | Testing |
+| Contratos API (req/res/errores) | Markdown | Backend, IA, Frontend |
+| Flujos de usuario (happy + edge) | Markdown | Frontend, Testing |
+| Prioridades y scope de MVP | Markdown | Orquestador |
+
+### Consume
+
+| Interfaz | Tipo | Producida por |
+|----------|------|---------------|
+| Informe de bugs / usabilidad | Markdown | Testing |
+| Estado del proyecto | JSON | Orquestador |
+| API de Bungie (referencia) | REST docs | bungie.net |
+
+## 8. Guardrails
+
+- ❌ **NO** escribir código de producción
+- ❌ **NO** definir features sin criterios de aceptación verificables
+- ❌ **NO** dejar contratos de API ambiguos (siempre request + response + errores)
+- ⚠️ Cada feature debe tener prioridad (Alta/Media/Baja) y complejidad (S/M/L/XL)
+- ⚠️ Los contratos API deben incluir todos los status codes posibles
+- ⚠️ Flujos de usuario deben cubrir al menos: happy path + 1 error path + 1 edge case
+
+## 9. Definition of Done
+
+- [ ] Todas las features del MVP tienen historia de usuario con criterios de aceptación
+- [ ] Todos los endpoints tienen contrato API con request, response y errores
+- [ ] Los flujos de usuario cubren happy paths y edge cases principales
+- [ ] `docs/features.md` refleja prioridades y scope actuales
+- [ ] El Orquestador tiene suficiente información para planificar la ejecución
+- [ ] Handoff generado en `docs/handoffs/`
+
+## 10. Formato de handoff
+
+> Archivo: `docs/handoffs/product_<yyyymmdd-hhmm>.md`
+
+### Resumen
+
+Qué features/flujos/contratos se definieron o actualizaron.
+
+### Cambios
+
+```
+- docs/features.md (actualizado)
+- docs/user-flows/build-creation.md (nuevo)
+- docs/api-contracts/builds-optimize.md (nuevo)
+```
+
+### Cómo probar
+
+```bash
+# Revisar docs generados
+cat docs/features.md
+ls docs/user-flows/
+ls docs/api-contracts/
+```
+
+### Decisiones tomadas
+
+- Ej: "Se pospone vault cleanup a v2 por complejidad"
+
+### Riesgos / limitaciones
+
+- Ej: "El contrato de /api/ai/chat asume streaming, verificar con IA"
+
+### TODOs para el siguiente rol
+
+- Ej: "Backend debe implementar los contratos de `docs/api-contracts/auth-*.md`"
+- Ej: "Frontend debe seguir los flujos de `docs/user-flows/login-flow.md`"

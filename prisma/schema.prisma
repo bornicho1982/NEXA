@@ -1,0 +1,51 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  bungieId            String    @unique
+  displayName         String?
+  profilePicturePath  String?
+  accessToken         String
+  refreshToken        String
+  tokenExpiresAt      DateTime
+  membershipType      Int?
+  destinyMembershipId String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  loadouts            Loadout[]
+}
+
+model Loadout {
+  id           String        @id @default(cuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  classType    Int           // 0=Titan, 1=Hunter, 2=Warlock
+  iconHash     String?       // Optional Bungie icon hash
+  colorHash    String?       // Optional Bungie color hash
+  items        LoadoutItem[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+model LoadoutItem {
+  id          String  @id @default(cuid())
+  loadoutId   String
+  loadout     Loadout @relation(fields: [loadoutId], references: [id], onDelete: Cascade)
+  itemHash    Int     // DestinyInventoryItemDefinition hash
+  instanceId  String? // Item instance ID (for equipped items)
+  bucketHash  Int     // Equipment slot bucket hash
+  socketOverrides String? // JSON string of socket plug hashes
+
+  @@index([loadoutId])
+}

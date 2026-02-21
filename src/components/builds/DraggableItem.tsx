@@ -1,0 +1,30 @@
+"use client";
+
+import { useDraggable } from "@dnd-kit/core";
+import { ItemCard, ItemProps } from "@/components/inventory/ItemCard";
+import { cn } from "@/lib/utils";
+
+interface DraggableItemProps {
+    id: string;
+    item: ItemProps['item'];
+    disabled?: boolean;
+}
+
+export function DraggableItem({ id, item, disabled }: DraggableItemProps) {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+        id: id,
+        data: item,
+        disabled
+    });
+
+    const style = transform ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        zIndex: 100,
+    } : undefined;
+
+    return (
+        <div ref={setNodeRef} style={style} {...listeners} {...attributes} className={cn("touch-none", isDragging ? "opacity-50" : "")}>
+            <ItemCard item={item} className={isDragging ? "ring-2 ring-gold-primary shadow-2xl" : ""} />
+        </div>
+    );
+}
