@@ -10,7 +10,6 @@ import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, MouseSensor, Tou
 import { ItemInspector } from "@/components/inventory/ItemInspector";
 import { ItemConstantsProvider } from "@/components/inventory/ItemConstantsContext";
 import { useInventoryStore } from "@/lib/store/inventory";
-import { MultiCharacterView } from "@/components/inventory/MultiCharacterView";
 import { CharacterColumn } from "@/components/inventory/CharacterColumn";
 import { SearchBar } from "@/components/inventory/SearchBar";
 import { VaultGrid } from "@/components/inventory/VaultGrid";
@@ -87,7 +86,7 @@ export default function InventoryPage() {
         moveItem(item, targetLocation, targetCharacterId);
     };
 
-    // Organized Data for Mobile View (Single Character)
+    // Organized Data for View (Single Character)
     const organizedData = useMemo(() => {
         if (!profile) return null;
 
@@ -107,7 +106,7 @@ export default function InventoryPage() {
                 if (!hasCommands) {
                     if (!item.name.toLowerCase().includes(query)) return;
                 } else {
-                    // Basic command filtering (Duplicated from MultiCharacterView for now)
+                    // Basic command filtering
                     if (query.includes("is:weapon") && item.itemType !== 3) return;
                     if (query.includes("is:armor") && item.itemType !== 2) return;
                     if (query.includes("is:exotic") && item.tierType !== 6) return;
@@ -171,8 +170,8 @@ export default function InventoryPage() {
                     {/* Controls Bar */}
                     <div className="sticky top-0 z-30 bg-[#030712]/95 backdrop-blur-xl border-b border-white/10 px-6 py-3">
                          <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                             {/* Mobile/Tablet Char Selector */}
-                             <div className="lg:hidden w-full md:w-auto">
+                             {/* Character Selector (Always Visible Now) */}
+                             <div className="w-full md:w-auto overflow-x-auto">
                                 <CharacterSelector characters={profile.characters} selectedId={selectedCharId} onSelect={setSelectedCharId} />
                              </div>
 
@@ -187,13 +186,8 @@ export default function InventoryPage() {
                     </div>
 
                     <main className="flex-1 px-4 py-4 max-w-[1920px] mx-auto w-full h-[calc(100vh-140px)] overflow-hidden">
-                        {/* Desktop View: Multi-Column */}
-                        <div className="hidden lg:block h-full w-full">
-                            <MultiCharacterView onInspect={setInspectItem} />
-                        </div>
-
-                        {/* Mobile View: Single Column + Vault Tab/Split */}
-                        <div className="lg:hidden flex gap-4 h-full overflow-x-auto snap-x custom-scrollbar">
+                        {/* Unified View: Single Character + Vault */}
+                        <div className="flex gap-4 h-full overflow-hidden">
                             {/* Selected Character */}
                              {selectedCharacter && organizedData && (
                                 <CharacterColumn
@@ -204,11 +198,14 @@ export default function InventoryPage() {
                              )}
 
                              {/* Vault */}
-                             <div className="w-[320px] shrink-0 flex flex-col border border-white/10 rounded-xl bg-[#050914]/50 overflow-hidden relative">
-                                 <div className="p-3 border-b border-white/10 bg-black/20">
+                             <div className="flex-1 flex flex-col border border-white/10 rounded-xl bg-[#050914]/50 overflow-hidden relative">
+                                 <div className="p-3 border-b border-white/10 bg-black/20 flex justify-between items-center">
                                     <h2 className="text-sm font-bold text-text-secondary uppercase tracking-widest">Vault</h2>
+                                    <span className="text-xs text-text-tertiary bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                                        {vaultItems.length}
+                                    </span>
                                  </div>
-                                 <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+                                 <div className="flex-1 overflow-y-auto custom-scrollbar p-3">
                                      <VaultGrid items={vaultItems} onItemClick={setInspectItem} />
                                  </div>
                              </div>
