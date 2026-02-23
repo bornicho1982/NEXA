@@ -20,6 +20,7 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
   loadouts            Loadout[]
+  annotations         ItemAnnotation[]
 }
 
 model Loadout {
@@ -48,4 +49,19 @@ model LoadoutItem {
   socketOverrides String? // JSON string of socket plug hashes
 
   @@index([loadoutId])
+}
+
+model ItemAnnotation {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemHash    Int
+  instanceId  String?  // For instanced items like weapons/armor. null for consumables?
+  tag         String?  // "favorite", "junk", "keep", "archive"
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, instanceId]) // Ensure one annotation per item instance per user
+  @@index([userId])
 }
