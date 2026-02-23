@@ -4,6 +4,7 @@ import { getAuthenticatedUser } from "@/lib/auth/user";
 import { bungieRequest } from "@/lib/bungie/client";
 import type { DimStat, DimSocketCategory, MasterworkInfo, CraftedInfo, DeepsightInfo, BreakerInfo } from "@/types/dim-types";
 import { enrichItemFull } from "./item-enrichment";
+import { prisma } from "@/lib/db";
 
 // ─── Bungie Profile Component Flags ───
 // These are bitmask values for the components we request from GetProfile
@@ -20,6 +21,8 @@ const COMPONENTS = {
     ItemPerks: 302,
     ItemReusablePlugs: 310, // Added for completeness, though 305 is usually enough for current perks
 };
+
+const POSTMASTER_BUCKET_HASH = 215593132;
 
 // ─── Public Types ───
 
@@ -70,6 +73,10 @@ export interface InventoryItem {
     stats?: Record<string, number>;
     // Sockets (Perks) — legacy format
     sockets?: ItemSocket[];
+
+    // ─── User Annotations ───
+    tag?: string | null;
+    notes?: string | null;
 
     // ─── DIM-level enriched fields (all optional for backward compat) ───
     tier?: number;             // Gear tier (1-5, from API gearTier, Edge of Fate)
@@ -139,6 +146,19 @@ export async function getFullProfile(): Promise<ProfileData> {
 
     await ensureManifestLoaded();
 
+    // Fetch annotations from DB
+    const annotations = await prisma.itemAnnotation.findMany({
+        where: { userId: user.id }
+    });
+
+    // Create a map for faster lookup by instanceId
+    const annotationMap = new Map<string, { tag: string | null; notes: string | null }>();
+    for (const ann of annotations) {
+        if (ann.instanceId) {
+            annotationMap.set(ann.instanceId, { tag: ann.tag, notes: ann.notes });
+        }
+    }
+
     const componentList = Object.values(COMPONENTS).join(",");
     const profileUrl = `/Destiny2/${user.membershipType}/Profile/${user.destinyMembershipId}/?components=${componentList}`;
 
@@ -146,7 +166,7 @@ export async function getFullProfile(): Promise<ProfileData> {
         accessToken: user.accessToken,
     });
 
-    const result = parseProfile(profile);
+    const result = parseProfile(profile, annotationMap);
 
     // Load item constants from manifest (overlay image paths)
     const constantsDef = getDefinition("DestinyInventoryItemConstantsDefinition", 1) as Record<string, unknown> | null;
@@ -332,7 +352,7 @@ const CLASS_NAMES: Record<number, string> = {
     3: "Unknown",
 };
 
-function parseProfile(profile: BungieProfileResponse): ProfileData {
+function parseProfile(profile: BungieProfileResponse, annotationMap?: Map<string, { tag: string | null; notes: string | null }>): ProfileData {
     // Parse characters
     const characters: InventoryCharacter[] = [];
     if (profile.characters?.data) {
@@ -360,7 +380,7 @@ function parseProfile(profile: BungieProfileResponse): ProfileData {
     // Parse vault items (profileInventory)
     if (profile.profileInventory?.data?.items) {
         for (const item of profile.profileInventory.data.items) {
-            const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "vault");
+            const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "vault", undefined, false, annotationMap);
             if (enriched) items.push(enriched);
         }
     }
@@ -370,7 +390,7 @@ function parseProfile(profile: BungieProfileResponse): ProfileData {
         for (const [charId, inv] of Object.entries(profile.characterInventories.data)) {
             if (inv.items) {
                 for (const item of inv.items) {
-                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId);
+                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId, false, annotationMap);
                     if (enriched) items.push(enriched);
                 }
             }
@@ -382,7 +402,7 @@ function parseProfile(profile: BungieProfileResponse): ProfileData {
         for (const [charId, equip] of Object.entries(profile.characterEquipment.data)) {
             if (equip.items) {
                 for (const item of equip.items) {
-                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId, true);
+                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId, true, annotationMap);
                     if (enriched) items.push(enriched);
                 }
             }
@@ -417,11 +437,18 @@ function enrichItem(
     location: InventoryItem["location"],
     characterId?: string,
     isEquipped = false,
+    annotationMap?: Map<string, { tag: string | null; notes: string | null }>,
 ): InventoryItem | null {
     const instance = item.itemInstanceId ? instances[item.itemInstanceId] : undefined;
     const instanceStats = item.itemInstanceId ? statsMap[item.itemInstanceId]?.stats : undefined;
     const socketStates = item.itemInstanceId ? socketsMap[item.itemInstanceId]?.sockets : undefined;
     const reusablePlugs = item.itemInstanceId ? reusablePlugsMap[item.itemInstanceId]?.plugs : undefined;
+
+    // Detect Postmaster
+    let realLocation = location;
+    if (item.bucketHash === POSTMASTER_BUCKET_HASH) {
+        realLocation = "postmaster";
+    }
 
     // Use the new DIM-level enrichment pipeline
     const enriched = enrichItemFull(
@@ -430,7 +457,7 @@ function enrichItem(
         instanceStats,
         socketStates,
         reusablePlugs,
-        location,
+        realLocation,
         characterId,
         isEquipped,
     );
@@ -438,5 +465,14 @@ function enrichItem(
     if (!enriched) return null;
 
     // Cast to InventoryItem — EnrichedItemData is a superset
-    return enriched as InventoryItem;
+    const result = enriched as InventoryItem;
+
+    // Attach annotations if available
+    if (item.itemInstanceId && annotationMap?.has(item.itemInstanceId)) {
+        const ann = annotationMap.get(item.itemInstanceId);
+        result.tag = ann?.tag;
+        result.notes = ann?.notes;
+    }
+
+    return result;
 }
