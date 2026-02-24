@@ -1,3 +1,5 @@
+import { ClarityLine } from "@/lib/clarity/types";
+
 // ─── DIM-Level Item Types ───
 // Inspired by DIM's item-types.ts — used by the enrichment pipeline
 
@@ -31,6 +33,7 @@ export interface DimPlug {
     }>;
     plugCategoryIdentifier?: string;
     plugCategoryHash?: number;
+    clarityInfo?: ClarityLine[];
 }
 
 /** A socket on an item (a slot that holds a plug) */

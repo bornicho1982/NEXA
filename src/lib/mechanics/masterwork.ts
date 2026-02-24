@@ -1,11 +1,11 @@
-import type { ItemProps } from "@/components/inventory/ItemCard";
+import { ItemCardProps } from "@/components/inventory/ItemCard";
 
 /**
  * Calculates the stats contributed by Masterworking.
  * In Destiny 2, a fully masterworked item (Tier 10) grants +2 to all stats.
  * Class items also grant +2 to all stats when masterworked.
  */
-export function getMasterworkBonus(item: ItemProps['item']): Record<string, number> {
+export function getMasterworkBonus(item: ItemCardProps['item']): Record<string, number> {
     const bonus: Record<string, number> = {
         Mobility: 0,
         Resilience: 0, // Will be mapped to Health later

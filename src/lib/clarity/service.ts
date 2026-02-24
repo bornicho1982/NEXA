@@ -1,33 +1,31 @@
-import { ClarityDatabase, ClarityItem } from "./types";
+import { ClarityDatabase, ClarityPerkData } from "./types";
 
 // MOCK DATABASE - In a real app, this would fetch from the Clarity API/Repo
 const MOCK_DB: ClarityDatabase = {
-    items: {
-        // Example: Omnioculus
-        82664644: {
-            hash: 82664644,
-            name: "Omnioculus",
-            perks: {
-                // Beyond the Veil
-                123456789: {
-                    description: "Grants a second smoke bomb charge. Damage resist x4 while invisible.",
-                    formula: "4x Resist = 50% DR in PvE, 10% in PvP"
+    // Example: Beyond the Veil Perk
+    123456789: {
+        hash: 123456789,
+        name: "Beyond the Veil",
+        itemHash: 82664644,
+        itemName: "Omnioculus",
+        descriptions: {
+            en: [
+                {
+                    linesContent: [
+                        { text: "Grants a second smoke bomb charge. Damage resist x4 while invisible.", classNames: ['pve'] }
+                    ]
                 }
-            }
+            ]
         }
-    },
-    scalars: {
-        // 2026 Scalar Table (Mocked based on research)
-        "grenade_t30": [1.0, 0.9, 0.8], // Diminishing returns example
     }
 };
 
-export const getClarityInfo = (itemHash: number): ClarityItem | null => {
-    return MOCK_DB.items[itemHash] || null;
-};
+export async function getClarityData(perkHash: number): Promise<ClarityPerkData | null> {
+    return MOCK_DB[perkHash] || null;
+}
 
 export const getCommunityDescription = (itemHash: number, perkHash: number): string | null => {
-    const item = MOCK_DB.items[itemHash];
-    if (!item?.perks[perkHash]) return null;
-    return item.perks[perkHash].description;
+    const perk = MOCK_DB[perkHash];
+    if (!perk || !perk.descriptions.en?.[0]?.linesContent?.[0]?.text) return null;
+    return perk.descriptions.en[0].linesContent[0].text;
 };

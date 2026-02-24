@@ -60,11 +60,25 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
+        // Check for a valid response
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+
+        // Clone the response synchronously BEFORE passing it to async caches.open
+        const responseToCache = networkResponse.clone();
+
         caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
+          // Verify scheme is supported before put
+          if (event.request.url.startsWith('http')) {
+            cache.put(event.request, responseToCache);
+          }
         });
         return networkResponse;
+      }).catch((err) => {
+        console.warn('[SW] Fetch failed:', err);
       });
+
       return cachedResponse || fetchPromise;
     })
   );

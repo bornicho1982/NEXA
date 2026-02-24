@@ -9,7 +9,7 @@ import { SubclassConfigurator } from "./SubclassConfigurator";
 import { DroppableSlot } from "./DroppableSlot";
 import { ItemPicker } from "./ItemPicker";
 import { ArtificeSelector } from "./ArtificeSelector";
-import { ItemCard, ItemProps } from "@/components/inventory/ItemCard";
+import { ItemCard, ItemCardProps } from "@/components/inventory/ItemCard";
 import { createPortal } from "react-dom";
 import {
     Sword,
@@ -55,7 +55,7 @@ const BUCKETS = {
 
 export function BuildArchitect() {
     const { weapons, armor, equipItem, unequipItem, stats } = useBuildStore();
-    const [activeDragItem, setActiveDragItem] = useState<ItemProps['item'] | null>(null);
+    const [activeDragItem, setActiveDragItem] = useState<ItemCardProps['item'] | null>(null);
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -63,7 +63,7 @@ export function BuildArchitect() {
     );
 
     const handleDragStart = (event: any) => {
-        setActiveDragItem(event.active.data.current as ItemProps['item']);
+        setActiveDragItem(event.active.data.current as ItemCardProps['item']);
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -192,7 +192,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.KINETIC)}
                                     label="Kinetic"
-                                    accepts={[BUCKETS.KINETIC]}
+                                    acceptCategory={String(BUCKETS.KINETIC)}
                                     item={weapons[BUCKETS.KINETIC]}
                                     placeholderIcon={<Crosshair size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.KINETIC)}
@@ -200,7 +200,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.ENERGY)}
                                     label="Energy"
-                                    accepts={[BUCKETS.ENERGY]}
+                                    acceptCategory={String(BUCKETS.ENERGY)}
                                     item={weapons[BUCKETS.ENERGY]}
                                     placeholderIcon={<Zap size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.ENERGY)}
@@ -208,7 +208,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.POWER)}
                                     label="Power"
-                                    accepts={[BUCKETS.POWER]}
+                                    acceptCategory={String(BUCKETS.POWER)}
                                     item={weapons[BUCKETS.POWER]}
                                     placeholderIcon={<Sword size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.POWER)}
@@ -223,7 +223,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.HELMET)}
                                     label="Helmet"
-                                    accepts={[BUCKETS.HELMET]}
+                                    acceptCategory={String(BUCKETS.HELMET)}
                                     item={armor[BUCKETS.HELMET]}
                                     placeholderIcon={<Box size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.HELMET)}
@@ -231,7 +231,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.ARMS)}
                                     label="Arms"
-                                    accepts={[BUCKETS.ARMS]}
+                                    acceptCategory={String(BUCKETS.ARMS)}
                                     item={armor[BUCKETS.ARMS]}
                                     placeholderIcon={<Box size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.ARMS)}
@@ -239,7 +239,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.CHEST)}
                                     label="Chest"
-                                    accepts={[BUCKETS.CHEST]}
+                                    acceptCategory={String(BUCKETS.CHEST)}
                                     item={armor[BUCKETS.CHEST]}
                                     placeholderIcon={<Shield size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.CHEST)}
@@ -247,7 +247,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.LEGS)}
                                     label="Legs"
-                                    accepts={[BUCKETS.LEGS]}
+                                    acceptCategory={String(BUCKETS.LEGS)}
                                     item={armor[BUCKETS.LEGS]}
                                     placeholderIcon={<Box size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.LEGS)}
@@ -255,7 +255,7 @@ export function BuildArchitect() {
                                 <DroppableSlot
                                     id={String(BUCKETS.CLASS)}
                                     label="Class"
-                                    accepts={[BUCKETS.CLASS]}
+                                    acceptCategory={String(BUCKETS.CLASS)}
                                     item={armor[BUCKETS.CLASS]}
                                     placeholderIcon={<Box size={24} />}
                                     onRemove={() => unequipItem(BUCKETS.CLASS)}

@@ -43,12 +43,12 @@ export function PostmasterPanel({ characterId }: PostmasterPanelProps) {
             </div>
 
             <div className="flex flex-wrap gap-1 min-h-[50px]">
-                {items.map(item => (
+                {items.map((item, index) => (
                     <ItemCard
-                        key={item.itemInstanceId || item.itemHash}
+                        key={`${item.itemInstanceId || item.itemHash}-${index}`}
                         item={item}
                         compact
-                        // No onClick for now, dragging is primary
+                    // No onClick for now, dragging is primary
                     />
                 ))}
                 {items.length === 0 && (

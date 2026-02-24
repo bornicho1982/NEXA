@@ -1,12 +1,12 @@
 "use client";
 
 import { useDraggable } from "@dnd-kit/core";
-import { ItemCard, ItemProps } from "@/components/inventory/ItemCard";
+import { ItemCard, ItemCardProps } from "@/components/inventory/ItemCard";
 import { cn } from "@/lib/utils";
 
 interface DraggableItemProps {
     id: string;
-    item: ItemProps['item'];
+    item?: ItemCardProps['item'];
     disabled?: boolean;
 }
 

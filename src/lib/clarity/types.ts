@@ -1,23 +1,43 @@
-export interface ClarityDescription {
-    // The raw community description (often with rich text or formulas)
-    description: string;
-    // Specific formulas for calculation (e.g., "10% + (5% * Stack)")
-    formula?: string;
-    // Known bugs or interactions
-    caveats?: string[];
+export type ClarityClassName =
+    | 'background'
+    | 'blue'
+    | 'bold'
+    | 'breakSpaces'
+    | 'center'
+    | 'communityDescription'
+    | 'descriptionDivider'
+    | 'enhancedArrow'
+    | 'green'
+    | 'link'
+    | 'purple'
+    | 'pve'
+    | 'pvp'
+    | 'spacer'
+    | 'title'
+    | 'yellow';
+
+export interface ClarityLineContent {
+    text?: string;
+    classNames?: ClarityClassName[];
+    link?: string;
 }
 
-export interface ClarityItem {
+export interface ClarityLine {
+    linesContent?: ClarityLineContent[];
+    classNames?: ClarityClassName[];
+}
+
+export interface ClarityPerkData {
     hash: number;
     name: string;
-    // Community insight per perk/trait
-    perks: Record<number, ClarityDescription>;
-    // Stats hidden from API but known to community (e.g., Aim Assist on partials)
-    hiddenStats?: Record<string, number>;
+    itemHash?: number;
+    itemName?: string;
+    descriptions: {
+        en?: ClarityLine[];
+        // we can support other languages later if needed
+    };
 }
 
 export interface ClarityDatabase {
-    items: Record<number, ClarityItem>;
-    // Global formulas (e.g., Cooldown scalars)
-    scalars: Record<string, number[]>;
+    [perkHash: string]: ClarityPerkData;
 }

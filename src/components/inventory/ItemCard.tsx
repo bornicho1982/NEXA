@@ -8,16 +8,17 @@ import { DroppableZone } from "./dnd/DroppableZone";
 import { ItemTooltip } from "./ItemTooltip";
 import { DIMItemTile } from "./DIMItemTile";
 
-interface ItemCardProps {
+export interface ItemCardProps {
     item?: InventoryItem;
     bucketHash?: number;
     category?: string;
     onClick?: () => void;
     compact?: boolean;
     isEquipped?: boolean;
+    className?: string;
 }
 
-export function ItemCard({ item, bucketHash, category, onClick, compact = false, isEquipped = false }: ItemCardProps) {
+export function ItemCard({ item, bucketHash, category, onClick, compact = false, isEquipped = false, className }: ItemCardProps) {
     const slotId = bucketHash ? `equipment-${bucketHash}` : "unknown-slot";
 
     // Tooltip State
@@ -27,7 +28,7 @@ export function ItemCard({ item, bucketHash, category, onClick, compact = false,
     // 1. Empty Slot State
     if (!item) {
         return (
-            <DroppableZone id={slotId} data={{ type: "equipment", bucketHash }} className={cn("rounded-sm relative group", compact ? "w-full aspect-square" : "w-16 h-16")}>
+            <DroppableZone id={slotId} data={{ type: "equipment", bucketHash }} className={cn("rounded-sm relative group", compact ? "w-[48px] h-[48px]" : "w-[68px] h-[68px]")}>
                 <div className={cn(
                     "w-full h-full border border-white/5 bg-white/5 flex items-center justify-center transition-colors group-hover:bg-white/10",
                     isEquipped ? "border-white/10" : ""
@@ -45,7 +46,7 @@ export function ItemCard({ item, bucketHash, category, onClick, compact = false,
     // 2. Item Card Content (Authentic DIM Style)
     const cardContent = (
         <div
-            className="relative"
+            className="relative cursor-pointer transition-all hover:scale-[1.03] active:scale-95 w-fit h-fit"
             onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
             onMouseLeave={() => setAnchorEl(null)}
         >
@@ -55,7 +56,7 @@ export function ItemCard({ item, bucketHash, category, onClick, compact = false,
                 compact={compact}
             />
             {/* Tooltip Portal */}
-            <ItemTooltip item={item} anchorEl={anchorEl} visible={hovering} minimal={true} />
+            <ItemTooltip item={item} anchorEl={anchorEl} visible={hovering} />
         </div>
     );
 
@@ -66,7 +67,8 @@ export function ItemCard({ item, bucketHash, category, onClick, compact = false,
         <DraggableItem
             id={item.itemInstanceId || item.itemHash.toString()}
             data={{ type: "item", item, fromBucket }}
-            className=""
+            item={item}
+            className={className}
         >
             {isEquipped ? (
                 <DroppableZone id={slotId} data={{ type: "equipment", bucketHash }} className="">

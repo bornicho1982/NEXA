@@ -73,9 +73,9 @@ export function ItemPicker({ className }: ItemPickerProps) {
                     </div>
                 ) : (
                     <div className="grid grid-cols-3 gap-2 pb-20">
-                        {filteredItems.map((item: any) => (
+                        {filteredItems.map((item: any, index: number) => (
                             <DraggableItem
-                                key={item.itemInstanceId || item.itemHash}
+                                key={`${item.itemInstanceId || item.itemHash}-${index}`}
                                 id={item.itemInstanceId || String(item.itemHash)}
                                 item={item}
                             />

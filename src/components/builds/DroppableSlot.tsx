@@ -3,13 +3,14 @@
 import { useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
-import { ItemCard, ItemProps } from "@/components/inventory/ItemCard";
+import { ItemCard, ItemCardProps } from "@/components/inventory/ItemCard";
 
 interface DroppableSlotProps {
     id: string; // Typically the bucketHash (e.g., "1498876634")
     label: string;
-    accepts: number[]; // Array of accepted bucketHashes or itemTypes
-    item: ItemProps['item'] | null;
+    acceptCategory: string; // The equipment category hash string it accepts
+    item?: ItemCardProps['item'] | null;
+    tooltip?: ReactNode;
     placeholderIcon?: ReactNode;
     className?: string;
     onRemove?: () => void;

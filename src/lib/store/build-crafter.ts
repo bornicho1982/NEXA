@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import type { ItemProps } from "@/components/inventory/ItemCard";
+import { InventoryItem } from '@/lib/inventory/service';
 import { getMasterworkBonus, getArtificeBonus } from "@/lib/mechanics/masterwork";
 import { STAT_KEYS, StatKey } from "@/lib/mechanics/stats";
 
-type Item = ItemProps['item'];
+type Item = InventoryItem;
 
 export interface BuildState {
     subclass: Item | null;
@@ -11,8 +11,8 @@ export interface BuildState {
     subclassPlugStats: Record<number, Record<string, number>>; // SocketIndex -> Stats
 
     // Equipment
-    weapons: { [key: number]: Item | null };
-    armor: { [key: number]: Item | null };
+    weapons: Record<number, InventoryItem | null>;
+    armor: Record<number, InventoryItem | null>;
 
     // Artifice Configuration
     // Key: Armor Bucket Hash (e.g. Helmet), Value: Stat Hash (e.g. Mobility) or null
@@ -22,9 +22,9 @@ export interface BuildState {
     stats: Record<string, number>;
 
     // Actions
-    setSubclass: (item: Item) => void;
+    setSubclass: (item: InventoryItem) => void;
     setSubclassPlug: (socketIndex: number, plugHash: number | null, stats?: Record<string, { value: number }>) => void;
-    equipItem: (bucketHash: number, item: Item) => void;
+    equipItem: (bucketHash: number, item: InventoryItem) => void;
     unequipItem: (bucketHash: number) => void;
     setArtificeMod: (bucketHash: number, statHash: number | null) => void;
     resetBuild: () => void;

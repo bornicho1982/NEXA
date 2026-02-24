@@ -32,10 +32,10 @@ export function BucketSection({ label, bucket, data, simple = false, compact = f
 
                 {/* 🔳 Inventory Grid (Larger Items - 4 cols) */}
                 {!simple && (
-                    <div className="flex flex-wrap" style={{ gap: "5px" }}>
-                        {data.inventory.slice(0, 9).map((item) => (
+                    <div className="flex flex-wrap w-[287px]" style={{ gap: "5px" }}>
+                        {data.inventory.slice(0, 9).map((item, index) => (
                             <ItemCard
-                                key={item.itemInstanceId || item.itemHash}
+                                key={`${item.itemInstanceId || item.itemHash}-${index}`}
                                 item={item}
                                 compact={compact}
                                 onClick={() => onItemClick?.(item)}

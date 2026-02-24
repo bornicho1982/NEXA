@@ -15,6 +15,7 @@ import type {
     DestinySocketTypeDefinition,
 } from "@/types";
 import type { DimSocket, DimSocketCategory, DimPlug } from "@/types/dim-types";
+import type { ClarityDatabase } from "@/lib/clarity/types";
 
 // ─── Known Socket Category Styles (from Bungie) ───
 // 0 = Unknown, 1 = Reusable, 2 = Consumable, 3 = Unlockable, 4 = Intrinsic, 5 = EnergyMeter, 6 = LargePerk, 7 = Abilities, 8 = Supers
@@ -79,6 +80,7 @@ export function buildSockets(
     itemDef: DestinyInventoryItemDefinition,
     socketStates?: BungieSocketState[],
     reusablePlugs?: Record<number, BungieReusablePlug[]>,
+    clarityDb?: ClarityDatabase,
 ): { sockets: DimSocket[]; socketCategories: DimSocketCategory[] } | null {
     if (!itemDef.sockets?.socketEntries?.length) {
         return null;
@@ -100,7 +102,7 @@ export function buildSockets(
         const socketCategoryHash = socketTypeDef?.socketCategoryHash ?? 0;
 
         // Build the current plug
-        const currentPlug = buildPlug(currentPlugHash, true, state?.isEnabled ?? true);
+        const currentPlug = buildPlug(currentPlugHash, true, state?.isEnabled ?? true, clarityDb);
         if (!currentPlug) continue;
 
         // Build plug options (alternatives)
@@ -109,7 +111,7 @@ export function buildSockets(
         // 1. From reusable plugs (component 310) — live data
         if (reusablePlugs?.[i]?.length) {
             for (const rp of reusablePlugs[i]) {
-                const plug = buildPlug(rp.plugItemHash, rp.plugItemHash === currentPlugHash, rp.enabled);
+                const plug = buildPlug(rp.plugItemHash, rp.plugItemHash === currentPlugHash, rp.enabled, clarityDb);
                 if (plug) plugOptions.push(plug);
             }
         }
@@ -121,7 +123,7 @@ export function buildSockets(
                 const typedPlugSet = plugSetDef as { reusablePlugItems: Array<{ plugItemHash: number; currentlyCanItRoll: boolean }> };
                 for (const rpi of typedPlugSet.reusablePlugItems) {
                     if (!rpi.currentlyCanItRoll) continue;
-                    const plug = buildPlug(rpi.plugItemHash, rpi.plugItemHash === currentPlugHash, true);
+                    const plug = buildPlug(rpi.plugItemHash, rpi.plugItemHash === currentPlugHash, true, clarityDb);
                     if (plug) plugOptions.push(plug);
                 }
             }
@@ -133,7 +135,7 @@ export function buildSockets(
             if (plugSetDef && typeof plugSetDef === "object" && "reusablePlugItems" in plugSetDef) {
                 const typedPlugSet = plugSetDef as { reusablePlugItems: Array<{ plugItemHash: number; currentlyCanItRoll: boolean }> };
                 for (const rpi of typedPlugSet.reusablePlugItems) {
-                    const plug = buildPlug(rpi.plugItemHash, rpi.plugItemHash === currentPlugHash, true);
+                    const plug = buildPlug(rpi.plugItemHash, rpi.plugItemHash === currentPlugHash, true, clarityDb);
                     if (plug) plugOptions.push(plug);
                 }
             }
@@ -178,6 +180,7 @@ function buildPlug(
     plugHash: number,
     isActive: boolean,
     isEnabled: boolean,
+    clarityDb?: ClarityDatabase,
 ): DimPlug | null {
     const plugDef = getDefinition("DestinyInventoryItemDefinition", plugHash) as DestinyInventoryItemDefinition | null;
     if (!plugDef || !plugDef.displayProperties?.name) return null;
@@ -204,6 +207,9 @@ function buildPlug(
         };
     }).filter(Boolean) as DimPlug["perks"];
 
+    // Extract Clarity info
+    const clarityInfo = clarityDb?.[plugHash.toString()]?.descriptions?.en;
+
     return {
         plugHash,
         name: plugDef.displayProperties.name,
@@ -216,6 +222,7 @@ function buildPlug(
         perks: perks && perks.length > 0 ? perks : undefined,
         plugCategoryIdentifier: plugDef.plug?.plugCategoryIdentifier,
         plugCategoryHash: plugDef.plug?.plugCategoryHash,
+        clarityInfo,
     };
 }
 

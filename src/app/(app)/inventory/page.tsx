@@ -14,7 +14,6 @@ import { CharacterColumn } from "@/components/inventory/CharacterColumn";
 import { SearchBar } from "@/components/inventory/SearchBar";
 import { VaultGrid } from "@/components/inventory/VaultGrid";
 import { BUCKET_ORDER } from "@/lib/destiny/buckets";
-import { cn } from "@/lib/utils";
 
 export default function InventoryPage() {
     const { profile, isLoading, loadProfile, selectedCharId, setSelectedCharId, moveItem, equipItem, searchQuery, setSearchQuery } = useInventoryStore();
@@ -63,12 +62,17 @@ export default function InventoryPage() {
 
         console.log("Dropped", item.name, "onto", targetType, over.id);
 
+        // Hijack: Treat dropping foreign items on equipment slots as a standard character transfer
+        if (targetType === "equipment" && (item.location !== "character" || item.characterId !== selectedCharId)) {
+            targetType = "character";
+        }
+
         if (targetType === "equipment") {
-             const targetBucket = over.data.current?.bucketHash;
-             if (targetBucket && item.bucketHash === targetBucket) {
-                 equipItem(item);
-             }
-             return;
+            const targetBucket = over.data.current?.bucketHash;
+            if (targetBucket && item.bucketHash === targetBucket) {
+                equipItem(item);
+            }
+            return;
         }
 
         // Transfer Logic
@@ -91,68 +95,77 @@ export default function InventoryPage() {
         if (!profile) return null;
 
         const charItems: Record<string, Record<number, { equipped?: InventoryItem; inventory: InventoryItem[] }>> = {};
-        profile.characters.forEach(c => {
-            charItems[c.characterId] = {};
-            BUCKET_ORDER.forEach(b => {
-                charItems[c.characterId][b] = { inventory: [] };
+
+        if (profile.characters) {
+            profile.characters.forEach(c => {
+                charItems[c.characterId] = {};
+                BUCKET_ORDER.forEach(b => {
+                    charItems[c.characterId][b] = { inventory: [] };
+                });
             });
-        });
+        }
 
-        profile.items.forEach(item => {
-             if (searchQuery) {
-                const query = searchQuery.toLowerCase();
-                const hasCommands = query.includes("is:") || query.includes("tag:");
+        if (profile.items) {
+            profile.items.forEach(item => {
+                if (searchQuery) {
+                    const query = searchQuery.toLowerCase();
+                    const hasCommands = query.includes("is:") || query.includes("tag:");
 
-                if (!hasCommands) {
-                    if (!item.name.toLowerCase().includes(query)) return;
-                } else {
-                    // Basic command filtering
-                    if (query.includes("is:weapon") && item.itemType !== 3) return;
-                    if (query.includes("is:armor") && item.itemType !== 2) return;
-                    if (query.includes("is:exotic") && item.tierType !== 6) return;
-                    if (query.includes("is:legendary") && item.tierType !== 5) return;
-                    if (query.includes("is:kinetic") && item.damageType !== 1) return;
-                    if (query.includes("is:deepsight") && !item.isDeepsight) return;
-                    if (query.includes("is:crafted") && !item.isCrafted) return;
-                    if (query.includes("is:locked") && !item.isLocked) return;
-                    if (query.includes("tag:favorite") && item.tag !== "favorite") return;
-                    if (query.includes("tag:junk") && item.tag !== "junk") return;
+                    if (!hasCommands) {
+                        if (!item.name.toLowerCase().includes(query)) return;
+                    } else {
+                        // Basic command filtering
+                        if (query.includes("is:weapon") && item.itemType !== 3) return;
+                        if (query.includes("is:armor") && item.itemType !== 2) return;
+                        if (query.includes("is:exotic") && item.tierType !== 6) return;
+                        if (query.includes("is:legendary") && item.tierType !== 5) return;
+                        if (query.includes("is:kinetic") && item.damageType !== 1) return;
+                        if (query.includes("is:deepsight") && !item.isDeepsight) return;
+                        if (query.includes("is:crafted") && !item.isCrafted) return;
+                        if (query.includes("is:locked") && !item.isLocked) return;
+                        if (query.includes("tag:favorite") && item.tag !== "favorite") return;
+                        if (query.includes("tag:junk") && item.tag !== "junk") return;
+                    }
                 }
-             }
 
-            if (item.location === "character" && item.characterId && charItems[item.characterId]) {
-                const bucket = item.intrinsicBucketHash || item.bucketHash;
-                if (!charItems[item.characterId][bucket]) {
-                    charItems[item.characterId][bucket] = { inventory: [] };
+                if (item.location === "character" && item.characterId && charItems[item.characterId]) {
+                    const bucket = item.intrinsicBucketHash || item.bucketHash;
+                    if (!charItems[item.characterId][bucket]) {
+                        charItems[item.characterId][bucket] = { inventory: [] };
+                    }
+                    if (item.isEquipped) {
+                        charItems[item.characterId][bucket].equipped = item;
+                    } else {
+                        charItems[item.characterId][bucket].inventory.push(item);
+                    }
                 }
-                if (item.isEquipped) {
-                    charItems[item.characterId][bucket].equipped = item;
-                } else {
-                    charItems[item.characterId][bucket].inventory.push(item);
-                }
-            }
-        });
-
-        // Sort
-        Object.values(charItems).forEach((buckets) => {
-            Object.values(buckets).forEach((slot) => {
-                slot.inventory.sort((a, b) => (b.primaryStat || 0) - (a.primaryStat || 0));
             });
-        });
+        }
+
+        // Sort items inside buckets only if there are items
+        if (profile.items) {
+            Object.values(charItems).forEach((buckets) => {
+                Object.values(buckets).forEach((slot) => {
+                    if (slot && slot.inventory) {
+                        slot.inventory.sort((a, b) => (b.primaryStat || 0) - (a.primaryStat || 0));
+                    }
+                });
+            });
+        }
 
         return charItems;
     }, [profile, searchQuery]);
 
     const vaultItems = useMemo(() => {
-         if (!profile) return [];
-         return profile.items.filter(i => {
-             if (i.location !== "vault") return false;
-             if (searchQuery) {
+        if (!profile || !profile.items) return [];
+        return profile.items.filter(i => {
+            if (i.location !== "vault") return false;
+            if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 if (!query.includes("is:") && !query.includes("tag:") && !i.name.toLowerCase().includes(query)) return false;
-             }
-             return true;
-         }).sort((a, b) => (b.primaryStat || 0) - (a.primaryStat || 0));
+            }
+            return true;
+        }).sort((a, b) => (b.primaryStat || 0) - (a.primaryStat || 0));
     }, [profile, searchQuery]);
 
 
@@ -169,46 +182,46 @@ export default function InventoryPage() {
 
                     {/* Controls Bar */}
                     <div className="sticky top-0 z-30 bg-[#030712]/95 backdrop-blur-xl border-b border-white/10 px-6 py-3">
-                         <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                             {/* Character Selector (Always Visible Now) */}
-                             <div className="w-full md:w-auto overflow-x-auto">
+                        <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+                            {/* Character Selector (Always Visible Now) */}
+                            <div className="w-full md:w-auto overflow-x-auto">
                                 <CharacterSelector characters={profile.characters} selectedId={selectedCharId} onSelect={setSelectedCharId} />
-                             </div>
+                            </div>
 
-                             {/* Search & Refresh */}
-                             <div className="flex items-center gap-3 w-full md:w-auto">
-                                 <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                                 <button onClick={() => loadProfile()} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors">
-                                     <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
-                                 </button>
-                             </div>
-                         </div>
+                            {/* Search & Refresh */}
+                            <div className="flex items-center gap-3 w-full md:w-auto">
+                                <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                                <button onClick={() => loadProfile()} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors">
+                                    <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <main className="flex-1 px-4 py-4 max-w-[1920px] mx-auto w-full h-[calc(100vh-140px)] overflow-hidden">
                         {/* Unified View: Single Character + Vault */}
                         <div className="flex gap-4 h-full overflow-hidden">
                             {/* Selected Character */}
-                             {selectedCharacter && organizedData && (
+                            {selectedCharacter && organizedData && (
                                 <CharacterColumn
                                     character={selectedCharacter}
                                     items={organizedData[selectedCharId]}
                                     onInspect={setInspectItem}
                                 />
-                             )}
+                            )}
 
-                             {/* Vault */}
-                             <div className="flex-1 flex flex-col border border-white/10 rounded-xl bg-[#050914]/50 overflow-hidden relative">
-                                 <div className="p-3 border-b border-white/10 bg-black/20 flex justify-between items-center">
+                            {/* Vault */}
+                            <div className="flex-1 flex flex-col border border-white/10 rounded-xl bg-[#050914]/50 overflow-hidden relative">
+                                <div className="p-3 border-b border-white/10 bg-black/20 flex justify-between items-center">
                                     <h2 className="text-sm font-bold text-text-secondary uppercase tracking-widest">Vault</h2>
                                     <span className="text-xs text-text-tertiary bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
                                         {vaultItems.length}
                                     </span>
-                                 </div>
-                                 <div className="flex-1 overflow-y-auto custom-scrollbar p-3">
-                                     <VaultGrid items={vaultItems} onItemClick={setInspectItem} />
-                                 </div>
-                             </div>
+                                </div>
+                                <div className="flex-1 overflow-y-auto custom-scrollbar p-3">
+                                    <VaultGrid items={vaultItems} onItemClick={setInspectItem} />
+                                </div>
+                            </div>
                         </div>
                     </main>
 

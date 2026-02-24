@@ -5,6 +5,8 @@ import { bungieRequest } from "@/lib/bungie/client";
 import type { DimStat, DimSocketCategory, MasterworkInfo, CraftedInfo, DeepsightInfo, BreakerInfo } from "@/types/dim-types";
 import { enrichItemFull } from "./item-enrichment";
 import { prisma } from "@/lib/db";
+import { fetchClarityData } from "@/lib/clarity/clarity-data";
+import type { ClarityDatabase } from "@/lib/clarity/types";
 
 // ─── Bungie Profile Component Flags ───
 // These are bitmask values for the components we request from GetProfile
@@ -166,7 +168,10 @@ export async function getFullProfile(): Promise<ProfileData> {
         accessToken: user.accessToken,
     });
 
-    const result = parseProfile(profile, annotationMap);
+    // Fetch Clarity community descriptions (cached in-memory/Next.js edge)
+    const clarityDb = await fetchClarityData();
+
+    const result = parseProfile(profile, annotationMap, clarityDb);
 
     // Load item constants from manifest (overlay image paths)
     const constantsDef = getDefinition("DestinyInventoryItemConstantsDefinition", 1) as Record<string, unknown> | null;
@@ -352,7 +357,7 @@ const CLASS_NAMES: Record<number, string> = {
     3: "Unknown",
 };
 
-function parseProfile(profile: BungieProfileResponse, annotationMap?: Map<string, { tag: string | null; notes: string | null }>): ProfileData {
+function parseProfile(profile: BungieProfileResponse, annotationMap?: Map<string, { tag: string | null; notes: string | null }>, clarityDb?: ClarityDatabase): ProfileData {
     // Parse characters
     const characters: InventoryCharacter[] = [];
     if (profile.characters?.data) {
@@ -380,7 +385,7 @@ function parseProfile(profile: BungieProfileResponse, annotationMap?: Map<string
     // Parse vault items (profileInventory)
     if (profile.profileInventory?.data?.items) {
         for (const item of profile.profileInventory.data.items) {
-            const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "vault", undefined, false, annotationMap);
+            const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "vault", undefined, false, annotationMap, clarityDb);
             if (enriched) items.push(enriched);
         }
     }
@@ -390,7 +395,7 @@ function parseProfile(profile: BungieProfileResponse, annotationMap?: Map<string
         for (const [charId, inv] of Object.entries(profile.characterInventories.data)) {
             if (inv.items) {
                 for (const item of inv.items) {
-                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId, false, annotationMap);
+                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId, false, annotationMap, clarityDb);
                     if (enriched) items.push(enriched);
                 }
             }
@@ -402,7 +407,7 @@ function parseProfile(profile: BungieProfileResponse, annotationMap?: Map<string
         for (const [charId, equip] of Object.entries(profile.characterEquipment.data)) {
             if (equip.items) {
                 for (const item of equip.items) {
-                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId, true, annotationMap);
+                    const enriched = enrichItem(item, instances, statsMap, socketsMap, reusablePlugsMap, "character", charId, true, annotationMap, clarityDb);
                     if (enriched) items.push(enriched);
                 }
             }
@@ -438,6 +443,7 @@ function enrichItem(
     characterId?: string,
     isEquipped = false,
     annotationMap?: Map<string, { tag: string | null; notes: string | null }>,
+    clarityDb?: ClarityDatabase,
 ): InventoryItem | null {
     const instance = item.itemInstanceId ? instances[item.itemInstanceId] : undefined;
     const instanceStats = item.itemInstanceId ? statsMap[item.itemInstanceId]?.stats : undefined;
@@ -460,6 +466,7 @@ function enrichItem(
         realLocation,
         characterId,
         isEquipped,
+        clarityDb
     );
 
     if (!enriched) return null;

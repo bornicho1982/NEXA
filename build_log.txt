@@ -1,0 +1,24 @@
+
+> nexa@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+ÔÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 8.6s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/inventory/EquipmentSlot.tsx:36:10
+Type error: Property 'item' is missing in type '{ children: Element; id: string; data: { type: string; item: InventoryItem; fromBucket: number | undefined; }; className: string; }' but required in type 'DraggableItemProps'.
+
+  34 |
+  35 |     const draggable = (
+> 36 |         <DraggableItem
+     |          ^
+  37 |             id={item.itemInstanceId || `hash-${item.itemHash}`}
+  38 |             data={{ type: "item", item, fromBucket: bucketHash }}
+  39 |             className="h-full w-full"
+Next.js build worker exited with code: 1 and signal: null

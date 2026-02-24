@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Lock, Unlock, Sparkles, FlaskConical, BookOpen, Star, Trash2, Archive, Check } from "lucide-react";
+import { X, Lock, Unlock, Star, Trash2, Archive, Check } from "lucide-react";
 import Image from "next/image";
 import type { InventoryItem } from "@/lib/inventory/service";
 import { cn } from "@/lib/utils";
 import { useInventoryStore } from "@/lib/store/inventory";
 import type { DimSocket } from "@/types/dim-types";
+import { ClarityDescription } from "./ClarityDescription";
 
 interface ItemInspectorProps {
     item: InventoryItem | null;
@@ -31,17 +32,20 @@ export function ItemInspector({ item, onClose }: ItemInspectorProps) {
     const [note, setNote] = useState("");
     const [mounted, setMounted] = useState(false);
 
-    useEffect(() => { setMounted(true); }, []);
+    useEffect(() => {
+        const t = setTimeout(() => setMounted(true), 0);
+        return () => clearTimeout(t);
+    }, []);
 
     // Initialize state from item
     useEffect(() => {
         if (item) {
-             // Reset state when item changes, but only if item is new
-             // We can assume item prop update means new item or updated item
-             // If updated item (e.g. locked status change), we might want to keep tab/note state?
-             // But if we switch items, we want reset.
-             // We'll rely on `key` prop in parent to reset state for new items.
-             // Here we just handle overflow.
+            // Reset state when item changes, but only if item is new
+            // We can assume item prop update means new item or updated item
+            // If updated item (e.g. locked status change), we might want to keep tab/note state?
+            // But if we switch items, we want reset.
+            // We'll rely on `key` prop in parent to reset state for new items.
+            // Here we just handle overflow.
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "";
@@ -107,7 +111,7 @@ export function ItemInspector({ item, onClose }: ItemInspectorProps) {
                 <div className="h-40 relative shrink-0">
                     {/* Background */}
                     {item.screenshot ? (
-                        <Image src={`${BUNGIE_ROOT}${item.screenshot}`} alt="" fill className="object-cover" unoptimized />
+                        <Image src={`${BUNGIE_ROOT}${item.screenshot}`} alt="" fill sizes="(max-width: 768px) 100vw, 440px" className="object-cover" unoptimized />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black" />
                     )}
@@ -187,7 +191,7 @@ export function ItemInspector({ item, onClose }: ItemInspectorProps) {
                     {/* PERKS TAB */}
                     {activeTab === "perks" && (
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                             {/* 🔌 Mods */}
+                            {/* 🔌 Mods */}
                             {modCategories && modCategories.length > 0 && (
                                 <Section title="Mods">
                                     <div className="flex gap-2 flex-wrap">
@@ -202,9 +206,11 @@ export function ItemInspector({ item, onClose }: ItemInspectorProps) {
                             {perkCategories && perkCategories.length > 0 && (
                                 <Section title="Perks & Traits">
                                     {perkCategories.map((cat) => (
-                                        <div key={cat.categoryHash} className="mb-3 last:mb-0">
-                                            <h4 className="text-[9px] uppercase text-text-tertiary/60 font-bold mb-2 tracking-widest">{cat.categoryName}</h4>
-                                            <div className="flex gap-3">
+                                        <div key={cat.categoryHash} className="mb-4 last:mb-0">
+                                            <h4 className="text-[10px] uppercase text-text-tertiary font-bold mb-2 tracking-widest">{cat.categoryName}</h4>
+
+                                            {/* Icons Row */}
+                                            <div className="flex gap-3 mb-2">
                                                 {cat.sockets.map((socket) => (
                                                     <div key={socket.socketIndex} className="flex flex-col items-center gap-1">
                                                         <SocketIcon socket={socket} large />
@@ -221,12 +227,26 @@ export function ItemInspector({ item, onClose }: ItemInspectorProps) {
                                                     </div>
                                                 ))}
                                             </div>
+
+                                            {/* Clarity Descriptions List */}
+                                            <div className="mt-3 flex flex-col gap-1.5">
+                                                {cat.sockets.filter(s => s.plug.description || s.plug.clarityInfo).map((socket) => (
+                                                    <div key={`desc-${socket.socketIndex}`} className="bg-white/5 p-2 rounded-md border border-white/5">
+                                                        <div className="text-[11px] font-bold text-white/90 leading-tight mb-1">{socket.plug.name}</div>
+                                                        {socket.plug.clarityInfo ? (
+                                                            <ClarityDescription lines={socket.plug.clarityInfo} />
+                                                        ) : (
+                                                            <div className="text-[11px] text-text-tertiary leading-relaxed">{socket.plug.description}</div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     ))}
                                 </Section>
                             )}
 
-                             {/* Legacy perks fallback */}
+                            {/* Legacy perks fallback */}
                             {legacyPerks && legacyPerks.length > 0 && (
                                 <Section title="Perks (Legacy)">
                                     <div className="grid grid-cols-5 gap-2">
@@ -246,31 +266,39 @@ export function ItemInspector({ item, onClose }: ItemInspectorProps) {
 
                     {/* STATS TAB */}
                     {activeTab === "stats" && (
-                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
                             {dimStats && dimStats.length > 0 ? (
-                                <div className="space-y-1.5">
+                                <div className="space-y-1.5 pt-2">
                                     {dimStats.filter(s => s.statHash !== -1).map((stat) => (
-                                        <div key={stat.statHash} className="flex items-center gap-3 text-xs">
-                                            <span className="text-text-secondary w-28 text-right text-[11px] truncate">{stat.name}</span>
+                                        <div key={stat.statHash} className="flex items-center gap-3 text-sm">
+                                            <span className="text-text-secondary w-32 text-right text-xs truncate">{stat.name}</span>
                                             {stat.bar ? (
-                                                <div className="flex-1 h-3 bg-white/5 rounded-sm overflow-hidden relative">
-                                                    <div className="absolute inset-y-0 left-0 bg-white/40 rounded-sm" style={{ width: `${Math.min(100, (stat.base / stat.displayMaximum) * 100)}%` }} />
-                                                    <div className={cn("absolute inset-y-0 left-0 rounded-sm", stat.value > stat.base ? "bg-gradient-to-r from-white/60 to-cyan-400/70" : "bg-white/60")} style={{ width: `${Math.min(100, (stat.value / stat.displayMaximum) * 100)}%` }} />
+                                                <div className="flex-1 h-3.5 bg-white/5 rounded-sm overflow-hidden relative">
+                                                    <div className="absolute inset-y-0 left-0 bg-white/20 rounded-sm" style={{ width: `${Math.min(100, (stat.base / stat.displayMaximum) * 100)}%` }} />
+                                                    <div className={cn("absolute inset-y-0 left-0 rounded-sm transition-all duration-300", stat.value > stat.base ? "bg-gradient-to-r from-white/60 to-cyan-400/70" : "bg-white/60")} style={{ width: `${Math.min(100, (stat.value / stat.displayMaximum) * 100)}%` }} />
                                                 </div>
                                             ) : <div className="flex-1" />}
-                                            <span className={cn("w-8 text-right font-mono text-xs", stat.value > stat.base ? "text-cyan-300" : "text-white/80")}>{stat.value}</span>
+                                            <span className={cn("w-10 text-right font-mono text-xs font-medium", stat.value > stat.base ? "text-cyan-300" : "text-white/90")}>{stat.value}</span>
                                         </div>
                                     ))}
                                     {isArmor && dimStats.find(s => s.statHash === -1) && (
-                                        <div className="flex items-center gap-3 text-xs pt-1.5 border-t border-white/5 mt-1.5">
-                                            <span className="text-text-secondary w-28 text-right text-[11px] font-semibold">Total</span>
+                                        <div className="flex items-center gap-3 text-xs pt-2.5 border-t border-white/10 mt-2.5">
+                                            <span className="text-text-secondary w-32 text-right text-xs font-semibold uppercase tracking-wider">Total</span>
                                             <div className="flex-1" />
-                                            <span className="w-8 text-right font-mono text-xs text-gold-primary font-bold">{dimStats.find(s => s.statHash === -1)?.value}</span>
+                                            <span className="w-10 text-right font-mono text-sm text-gold-primary font-bold">{dimStats.find(s => s.statHash === -1)?.value}</span>
                                         </div>
                                     )}
                                 </div>
                             ) : (
                                 <div className="text-center text-xs text-text-tertiary py-10">No stats available</div>
+                            )}
+
+                            {/* Masterwork stat info */}
+                            {item.masterworkInfo?.statName && (
+                                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/5 text-xs text-[#ceae33] font-medium tracking-wide">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-[#ceae33]/40 animate-pulse" />
+                                    <span>Masterwork: <span className="text-white">+{item.masterworkInfo.statValue} {item.masterworkInfo.statName}</span></span>
+                                </div>
                             )}
                         </div>
                     )}

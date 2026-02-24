@@ -187,8 +187,8 @@ export const useInventoryStore = create<InventoryState>()(
 
                     // --- Space Management ---
                     if (targetLocation === "character" && characterId) {
-                         const targetBucket = item.bucketHash;
-                         const charItems = profile.items.filter(i =>
+                        const targetBucket = item.bucketHash;
+                        const charItems = profile.items.filter(i =>
                             i.location === "character" &&
                             i.characterId === characterId &&
                             i.bucketHash === targetBucket &&
@@ -219,10 +219,10 @@ export const useInventoryStore = create<InventoryState>()(
                                 set((state) => {
                                     if (!state.profile) return state;
                                     const newItems = state.profile.items.map(i => {
-                                            if (i.itemInstanceId === victim.itemInstanceId) {
-                                                return { ...i, location: "vault", characterId: undefined };
-                                            }
-                                            return i;
+                                        if (i.itemInstanceId === victim.itemInstanceId) {
+                                            return { ...i, location: "vault" as const, characterId: undefined };
+                                        }
+                                        return i;
                                     });
                                     return { ...state, profile: { ...state.profile, items: newItems } };
                                 });
@@ -256,43 +256,43 @@ export const useInventoryStore = create<InventoryState>()(
                 set((state) => {
                     if (!state.profile) return state;
                     const newItems = state.profile.items.map(i => {
-                         if (i.itemInstanceId === item.itemInstanceId) {
-                             return {
-                                 ...i,
-                                 location: targetLocation,
-                                 characterId: targetLocation === "vault" ? undefined : targetCharacterId
-                             };
-                         }
-                         return i;
-                     });
+                        if (i.itemInstanceId === item.itemInstanceId) {
+                            return {
+                                ...i,
+                                location: targetLocation as "character" | "vault" | "postmaster",
+                                characterId: targetLocation === "vault" ? undefined : targetCharacterId
+                            };
+                        }
+                        return i;
+                    });
                     return { ...state, profile: { ...state.profile, items: newItems } };
                 });
             },
 
             equipItem: async (item) => {
-                 if (!item.characterId || !item.itemInstanceId) return;
-                 const op: QueueOperation = {
-                     id: crypto.randomUUID(),
-                     type: "EQUIP",
-                     params: {
-                         itemId: item.itemInstanceId,
-                         characterId: item.characterId
-                     },
-                     description: `Equipping ${item.name}`
-                 };
-                 get().addToQueue(op);
+                if (!item.characterId || !item.itemInstanceId) return;
+                const op: QueueOperation = {
+                    id: crypto.randomUUID(),
+                    type: "EQUIP",
+                    params: {
+                        itemId: item.itemInstanceId,
+                        characterId: item.characterId
+                    },
+                    description: `Equipping ${item.name}`
+                };
+                get().addToQueue(op);
 
-                 // Optimistic
-                 set((state) => {
-                     if (!state.profile) return state;
-                     const newItems = state.profile.items.map(i => {
-                         if (i.characterId === item.characterId && i.bucketHash === item.bucketHash) {
-                             return { ...i, isEquipped: i.itemInstanceId === item.itemInstanceId };
-                         }
-                         return i;
-                     });
-                     return { ...state, profile: { ...state.profile, items: newItems } };
-                 });
+                // Optimistic
+                set((state) => {
+                    if (!state.profile) return state;
+                    const newItems = state.profile.items.map(i => {
+                        if (i.characterId === item.characterId && i.bucketHash === item.bucketHash) {
+                            return { ...i, isEquipped: i.itemInstanceId === item.itemInstanceId };
+                        }
+                        return i;
+                    });
+                    return { ...state, profile: { ...state.profile, items: newItems } };
+                });
             },
 
             pullFromPostmaster: async (item) => {
@@ -311,37 +311,37 @@ export const useInventoryStore = create<InventoryState>()(
                 );
 
                 if (charItems.length >= 9) {
-                     const victim = findVictim(profile.items, targetBucket, characterId);
-                     if (victim) {
-                         const victimOp: QueueOperation = {
-                             id: crypto.randomUUID(),
-                             type: "TRANSFER",
-                             params: {
-                                 itemReferenceHash: victim.itemHash,
-                                 itemId: victim.itemInstanceId || "0",
-                                 stackSize: victim.quantity,
-                                 transferToVault: true,
-                                 characterId: victim.characterId!,
-                             },
-                             description: `Moving ${victim.name} to Vault to make space`
-                         };
-                         get().addToQueue(victimOp);
+                    const victim = findVictim(profile.items, targetBucket, characterId);
+                    if (victim) {
+                        const victimOp: QueueOperation = {
+                            id: crypto.randomUUID(),
+                            type: "TRANSFER",
+                            params: {
+                                itemReferenceHash: victim.itemHash,
+                                itemId: victim.itemInstanceId || "0",
+                                stackSize: victim.quantity,
+                                transferToVault: true,
+                                characterId: victim.characterId!,
+                            },
+                            description: `Moving ${victim.name} to Vault to make space`
+                        };
+                        get().addToQueue(victimOp);
 
-                         // Optimistic Update for victim
+                        // Optimistic Update for victim
                         set((state) => {
                             if (!state.profile) return state;
                             const newItems = state.profile.items.map(i => {
-                                    if (i.itemInstanceId === victim.itemInstanceId) {
-                                        return { ...i, location: "vault", characterId: undefined };
-                                    }
-                                    return i;
+                                if (i.itemInstanceId === victim.itemInstanceId) {
+                                    return { ...i, location: "vault" as const, characterId: undefined };
+                                }
+                                return i;
                             });
                             return { ...state, profile: { ...state.profile, items: newItems } };
                         });
-                     } else {
-                         toast.error("Inventory full and no items can be moved.");
-                         return;
-                     }
+                    } else {
+                        toast.error("Inventory full and no items can be moved.");
+                        return;
+                    }
                 }
 
                 const op: QueueOperation = {
@@ -359,15 +359,15 @@ export const useInventoryStore = create<InventoryState>()(
 
                 // Optimistic
                 set((state) => {
-                     if (!state.profile) return state;
-                     const newItems = state.profile.items.map(i => {
-                         if (i.itemInstanceId === item.itemInstanceId) {
-                             return { ...i, location: "character" };
-                         }
-                         return i;
-                     });
-                     return { ...state, profile: { ...state.profile, items: newItems } };
-                 });
+                    if (!state.profile) return state;
+                    const newItems = state.profile.items.map(i => {
+                        if (i.itemInstanceId === item.itemInstanceId) {
+                            return { ...i, location: "character" as const };
+                        }
+                        return i;
+                    });
+                    return { ...state, profile: { ...state.profile, items: newItems } };
+                });
             },
 
             setLockState: async (item, locked) => {
@@ -387,41 +387,41 @@ export const useInventoryStore = create<InventoryState>()(
 
                 // Optimistic
                 set((state) => {
-                     if (!state.profile) return state;
-                     const newItems = state.profile.items.map(i => {
-                         if (i.itemInstanceId === item.itemInstanceId) {
-                             return { ...i, isLocked: locked };
-                         }
-                         return i;
-                     });
-                     return { ...state, profile: { ...state.profile, items: newItems } };
-                 });
+                    if (!state.profile) return state;
+                    const newItems = state.profile.items.map(i => {
+                        if (i.itemInstanceId === item.itemInstanceId) {
+                            return { ...i, isLocked: locked };
+                        }
+                        return i;
+                    });
+                    return { ...state, profile: { ...state.profile, items: newItems } };
+                });
             },
 
             setAnnotation: async (item, tag, notes) => {
-                 set((state) => {
-                     if (!state.profile) return state;
-                     const newItems = state.profile.items.map(i => {
-                         if (i.itemInstanceId === item.itemInstanceId) {
-                             return { ...i, tag, notes };
-                         }
-                         return i;
-                     });
-                     return { ...state, profile: { ...state.profile, items: newItems } };
-                 });
+                set((state) => {
+                    if (!state.profile) return state;
+                    const newItems = state.profile.items.map(i => {
+                        if (i.itemInstanceId === item.itemInstanceId) {
+                            return { ...i, tag, notes };
+                        }
+                        return i;
+                    });
+                    return { ...state, profile: { ...state.profile, items: newItems } };
+                });
 
-                 try {
-                     await updateItemAnnotationAction({
-                         itemHash: item.itemHash,
-                         instanceId: item.itemInstanceId,
-                         tag,
-                         notes
-                     });
-                     toast.success("Updated notes/tags");
-                 } catch (e) {
-                     console.error("Failed to update notes/tags", e);
-                     toast.error("Failed to update notes/tags");
-                 }
+                try {
+                    await updateItemAnnotationAction({
+                        itemHash: item.itemHash,
+                        instanceId: item.itemInstanceId,
+                        tag,
+                        notes
+                    });
+                    toast.success("Updated notes/tags");
+                } catch (e) {
+                    console.error("Failed to update notes/tags", e);
+                    toast.error("Failed to update notes/tags");
+                }
             }
 
         })

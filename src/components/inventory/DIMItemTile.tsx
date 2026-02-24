@@ -36,10 +36,12 @@ export function DIMItemTile({ item, className, onClick, compact, itemConstants: 
     const isLocked = item.isLocked;
     const isWeapon = item.itemType === 3;
 
-    // ─── Item Icon Size (DIM default: --item-size: 68px) ───
-    const iconSize = compact ? 52 : 68;
-    const borderWidth = 2;
-    const badgeHeight = compact ? 14 : 18;
+    // ─── Item Icon Size ───
+    // Standard size for Character column (w-[68px])
+    // Compact size for Vault grid (w-[48px]) to fit ~15 items across
+    const iconSize = compact ? 48 : 68;
+    const borderWidth = compact ? 1 : 2;
+    const badgeHeight = compact ? 12 : 18;
 
     // ─── 1. Icon Background Layers (front to back, like DIM) ───
     const backgrounds: string[] = [];

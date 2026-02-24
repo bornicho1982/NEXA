@@ -27,6 +27,7 @@ import { buildStats } from "./stats-builder";
 import { buildMasterwork } from "./masterwork-builder";
 import { buildCraftedInfo } from "./crafted-builder";
 import { buildDeepsightInfo } from "./deepsight-builder";
+import type { ClarityDatabase } from "@/lib/clarity/types";
 
 // ─── Types ───
 
@@ -152,6 +153,7 @@ export function enrichItemFull(
     location: "character" | "vault" | "postmaster",
     characterId?: string,
     isEquipped = false,
+    clarityDb?: ClarityDatabase,
 ): EnrichedItemData | null {
     const def = getDefinition("DestinyInventoryItemDefinition", item.itemHash) as DestinyInventoryItemDefinition | null;
     if (!def || !def.displayProperties?.name) return null;
@@ -163,7 +165,7 @@ export function enrichItemFull(
         : null;
 
     // ── Sockets (DIM-style) ──
-    const socketResult = buildSockets(def, socketStates, reusablePlugs);
+    const socketResult = buildSockets(def, socketStates, reusablePlugs, clarityDb);
     const dimSockets = socketResult?.sockets;
     const socketCategories = socketResult?.socketCategories;
 

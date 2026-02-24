@@ -13,9 +13,9 @@ export function VaultGrid({ items, onItemClick }: VaultGridProps) {
     return (
         <DroppableZone id="vault-main" data={{ type: "vault" }} className="h-full w-full">
             <div className="flex flex-wrap content-start" style={{ gap: "5px" }}>
-                {items.map((item) => (
+                {items.map((item, index) => (
                     <ItemCard
-                        key={item.itemInstanceId || item.itemHash}
+                        key={`${item.itemInstanceId || item.itemHash}-${index}`}
                         item={item}
                         compact={false}
                         bucketHash={138197802}

@@ -20,11 +20,11 @@ export function CharacterColumn({ character, items, onInspect }: CharacterColumn
         <DroppableZone
             id={`char-panel-${character.characterId}`}
             data={{ type: "character", characterId: character.characterId }}
-            className="w-[320px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar pb-20 relative rounded-xl transition-colors bg-white/5 border border-white/5"
+            className="w-[410px] shrink-0 flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar pb-20 relative rounded-xl transition-colors bg-white/5 border border-white/5"
             activeClassName="bg-white/5 ring-1 ring-gold-primary/50"
         >
-             {/* Header */}
-             <div className="relative h-16 w-full overflow-hidden rounded-t-xl shrink-0">
+            {/* Header */}
+            <div className="relative h-16 w-full overflow-hidden rounded-t-xl shrink-0">
                 {character.emblemBackgroundPath ? (
                     <Image
                         src={`${BUNGIE_ROOT}${character.emblemBackgroundPath}`}
@@ -48,23 +48,23 @@ export function CharacterColumn({ character, items, onInspect }: CharacterColumn
 
                 {/* Weapons */}
                 <div className="space-y-2 bg-black/20 p-2 rounded-lg border border-white/5">
-                     <h3 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Weapons</h3>
-                     <BucketSection label="Kinetic" bucket={BUCKETS.KINETIC} data={items?.[BUCKETS.KINETIC]} onItemClick={onInspect} />
-                     <BucketSection label="Energy" bucket={BUCKETS.ENERGY} data={items?.[BUCKETS.ENERGY]} onItemClick={onInspect} />
-                     <BucketSection label="Power" bucket={BUCKETS.POWER} data={items?.[BUCKETS.POWER]} onItemClick={onInspect} />
+                    <h3 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Weapons</h3>
+                    <BucketSection label="Kinetic" bucket={BUCKETS.KINETIC} data={items?.[BUCKETS.KINETIC]} onItemClick={onInspect} />
+                    <BucketSection label="Energy" bucket={BUCKETS.ENERGY} data={items?.[BUCKETS.ENERGY]} onItemClick={onInspect} />
+                    <BucketSection label="Power" bucket={BUCKETS.POWER} data={items?.[BUCKETS.POWER]} onItemClick={onInspect} />
                 </div>
 
                 {/* Armor */}
                 <div className="space-y-2 bg-black/20 p-2 rounded-lg border border-white/5">
-                     <h3 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Armor</h3>
-                     <BucketSection label="Helmet" bucket={BUCKETS.HELMET} data={items?.[BUCKETS.HELMET]} onItemClick={onInspect} />
-                     <BucketSection label="Gauntlets" bucket={BUCKETS.GAUNTLETS} data={items?.[BUCKETS.GAUNTLETS]} onItemClick={onInspect} />
-                     <BucketSection label="Chest" bucket={BUCKETS.CHEST} data={items?.[BUCKETS.CHEST]} onItemClick={onInspect} />
-                     <BucketSection label="Legs" bucket={BUCKETS.LEG} data={items?.[BUCKETS.LEG]} onItemClick={onInspect} />
-                     <BucketSection label="Class" bucket={BUCKETS.CLASS_ITEM} data={items?.[BUCKETS.CLASS_ITEM]} onItemClick={onInspect} />
+                    <h3 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1">Armor</h3>
+                    <BucketSection label="Helmet" bucket={BUCKETS.HELMET} data={items?.[BUCKETS.HELMET]} onItemClick={onInspect} />
+                    <BucketSection label="Gauntlets" bucket={BUCKETS.GAUNTLETS} data={items?.[BUCKETS.GAUNTLETS]} onItemClick={onInspect} />
+                    <BucketSection label="Chest" bucket={BUCKETS.CHEST} data={items?.[BUCKETS.CHEST]} onItemClick={onInspect} />
+                    <BucketSection label="Legs" bucket={BUCKETS.LEG} data={items?.[BUCKETS.LEG]} onItemClick={onInspect} />
+                    <BucketSection label="Class" bucket={BUCKETS.CLASS_ITEM} data={items?.[BUCKETS.CLASS_ITEM]} onItemClick={onInspect} />
                 </div>
 
-                 {/* Equipment */}
+                {/* Equipment */}
                 <div className="bg-black/20 p-2 rounded-lg border border-white/5">
                     <h3 className="text-[10px] font-bold text-text-secondary uppercase tracking-widest px-1 mb-2">Equipment</h3>
                     <div className="grid grid-cols-3 gap-1">

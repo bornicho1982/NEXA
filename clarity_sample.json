@@ -1,0 +1,15 @@
+{
+  "hash": 644105,
+  "name": "Heavy Ammo Finder",
+  "descriptions": {
+    "en": [
+      {
+        "linesContent": [
+          {
+            "text": "Grants a 1.33x|1.66x|2x multiplier to all Heavy Ammo Meter progress with 1|2|3 Mods equipped."
+          }
+        ]
+      }
+    ]
+  }
+}

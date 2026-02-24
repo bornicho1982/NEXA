@@ -7,7 +7,7 @@ import { bungieRequest } from "@/lib/bungie/client";
 
 const MANIFEST_DIR = path.join(process.cwd(), "data", "manifest");
 const INFO_FILE = path.join(MANIFEST_DIR, "info.json");
-const LANGUAGE = "en";
+const LANGUAGE = "es";
 
 /** Tables we download and cache */
 const TABLES_TO_DOWNLOAD: ManifestTableName[] = [

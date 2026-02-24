@@ -2,10 +2,10 @@
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useState, useEffect } from "react";
-import { ItemCard, ItemProps } from "./ItemCard";
+import { ItemCard, ItemCardProps } from "./ItemCard";
 
 interface VirtualGridProps {
-    items: ItemProps['item'][];
+    items: ItemCardProps['item'][];
     itemHeight: number; // Height of the card + gap
     minItemWidth: number; // Minimum width of a card
     gap?: number;
@@ -71,13 +71,16 @@ export function VirtualGrid({ items, itemHeight, minItemWidth, gap = 8, classNam
                                 padding: `0 ${gap / 2}px` // slight padding compensation
                             }}
                         >
-                            {rowItems.map((item) => (
-                                <ItemCard
-                                    key={item.itemInstanceId || item.itemHash}
-                                    item={item}
-                                    className="w-full"
-                                />
-                            ))}
+                            {rowItems.map((item, index) => {
+                                if (!item) return <div key={index} className="w-full" />;
+                                return (
+                                    <ItemCard
+                                        key={`${item.itemInstanceId || item.itemHash}-${index}`}
+                                        item={item}
+                                        className="w-full"
+                                    />
+                                );
+                            })}
                         </div>
                     );
                 })}

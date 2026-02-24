@@ -36,6 +36,7 @@ export function EquipmentSlot({ item, category, bucketHash, onClick, compact = f
         <DraggableItem
             id={item.itemInstanceId || `hash-${item.itemHash}`}
             data={{ type: "item", item, fromBucket: bucketHash }}
+            item={item}
             className="h-full w-full"
         >
             <div
