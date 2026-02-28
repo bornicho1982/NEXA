@@ -161,13 +161,15 @@ export class CharacterRenderer {
                 clearcoat: 0.3,
                 clearcoatRoughness: 0.2,
                 envMapIntensity: 1.0,
+                side: THREE.DoubleSide // Important: Some extracted meshes have inverted normals
             });
 
             const mesh = new THREE.Mesh(geometry, material);
             mesh.name = def.displayProperties.name || `Item_${itemHash}`;
 
-            // Adjust scale if needed (Destiny models might need scaling down)
-            // mesh.scale.set(0.01, 0.01, 0.01);
+            // Adjust scale if needed (Destiny models are often very large)
+            // We scale it down to fit within a normal OrbitControls FOV
+            mesh.scale.set(0.02, 0.02, 0.02);
 
             console.log(`[CharacterRenderer] Mesh created and named: ${mesh.name}`);
 
