@@ -22,7 +22,7 @@ export function DroppableZone({ id, data, children, className, activeClassName }
             ref={setNodeRef}
             className={cn(
                 className,
-                isOver && (activeClassName || "ring-2 ring-gold-primary ring-offset-2 ring-offset-black bg-white/5")
+                isOver && (activeClassName || "ring-2 ring-wd-primary-600 ring-offset-2 ring-offset-black bg-white/5")
             )}
         >
             {children}

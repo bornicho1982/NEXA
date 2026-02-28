@@ -10,7 +10,7 @@ export function ThinkingIndicator() {
             animate={{ opacity: 1, y: 0 }}
             className="flex gap-3 self-start max-w-[85%]"
         >
-            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border bg-bg-tertiary border-gold-primary/20 text-gold-primary">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border bg-bg-tertiary border-wd-primary-600/20 text-wd-primary-400">
                 <Bot size={16} />
             </div>
 
@@ -18,7 +18,7 @@ export function ThinkingIndicator() {
                 {[0, 1, 2].map((i) => (
                     <motion.div
                         key={i}
-                        className="w-1.5 h-1.5 bg-gold-primary/50 rounded-full"
+                        className="w-1.5 h-1.5 bg-wd-primary-600/50 rounded-full"
                         animate={{ y: [0, -3, 0] }}
                         transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
                     />

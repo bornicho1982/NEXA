@@ -1,27 +1,38 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { Header } from "@/components/layout/Header";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { CharacterSelector } from "@/components/inventory/CharacterSelector";
 import Image from "next/image";
 import type { InventoryItem } from "@/lib/inventory/service";
-import { RefreshCw } from "lucide-react";
+import { ShieldAlert, RefreshCw } from "lucide-react";
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { ItemInspector } from "@/components/inventory/ItemInspector";
 import { ItemConstantsProvider } from "@/components/inventory/ItemConstantsContext";
 import { useInventoryStore } from "@/lib/store/inventory";
+import { useFarmingStore } from "@/lib/store/farming";
+import { useGodRollStore } from "@/lib/store/god-rolls";
+import { evaluateSearchQuery } from "@/lib/inventory/search";
 import { CharacterColumn } from "@/components/inventory/CharacterColumn";
 import { SearchBar } from "@/components/inventory/SearchBar";
 import { VaultGrid } from "@/components/inventory/VaultGrid";
-import { BUCKET_ORDER } from "@/lib/destiny/buckets";
+import { FarmingToggle } from "@/components/inventory/FarmingToggle";
+import { DensityToggle } from "@/components/inventory/DensityToggle";
+import { VaultFilterBar } from "@/components/inventory/VaultFilterBar";
+import { BulkActionDropdown } from "@/components/inventory/BulkActionDropdown";
+import { ComparatorOverlay } from "@/components/compare/ComparatorOverlay";
+import { BUCKET_ORDER, BUCKETS } from "@/lib/destiny/buckets";
+import { useLayoutStore } from "@/lib/store/layout";
 
 export default function InventoryPage() {
-    const { profile, isLoading, loadProfile, selectedCharId, setSelectedCharId, moveItem, equipItem, searchQuery, setSearchQuery } = useInventoryStore();
+    const { profile, isLoading, error, loadProfile, selectedCharId, setSelectedCharId, moveItem, equipItem, searchQuery, setSearchQuery } = useInventoryStore();
     const [activeDragItem, setActiveDragItem] = useState<InventoryItem | null>(null);
     const [inspectItem, setInspectItem] = useState<InventoryItem | null>(null);
+    const { isCompactMode, vaultFilter } = useLayoutStore();
 
     // Initial Load & Polling
+    const loadGodRolls = useGodRollStore((s) => s.load);
     useEffect(() => {
+        loadGodRolls();
         loadProfile();
         const intervalId = setInterval(() => loadProfile(true), 30000);
 
@@ -37,7 +48,45 @@ export default function InventoryPage() {
             window.removeEventListener("focus", onFocus);
             document.removeEventListener("visibilitychange", onVisibilityChange);
         };
-    }, [loadProfile]);
+    }, [loadProfile, loadGodRolls]);
+
+    // Farming Mode Effect
+    const isFarmingEnabled = useFarmingStore((s) => s.isEnabled);
+    const farmingInterval = useFarmingStore((s) => s.intervalSeconds);
+    const { pullFromPostmaster } = useInventoryStore();
+    const farmingBlacklist = useRef<Set<string>>(new Set());
+
+    useEffect(() => {
+        if (!isFarmingEnabled || !profile) return;
+
+        const timer = setInterval(() => {
+            // Find non-engram postmaster items
+            // 215593132 is the postmaster bucket. itemType 8 is engrams.
+            const postmasterItems = profile.items.filter(i =>
+                i.characterId === selectedCharId &&
+                i.location === "postmaster" &&
+                i.bucketHash === 215593132 &&
+                i.itemType !== 8 &&
+                !(i.transferStatus & 2) && // Ignore items marked as NotTransferrable
+                !farmingBlacklist.current.has(i.itemInstanceId || `${i.itemHash}-${i.characterId}`)
+            );
+
+            if (postmasterItems.length > 0) {
+                const itemsToPull = postmasterItems.slice(0, 10);
+                console.log(`[Farming Mode] Found ${postmasterItems.length} items. Siphoning ${itemsToPull.length} to Vault...`);
+
+                itemsToPull.forEach(item => {
+                    const uniqueId = item.itemInstanceId || `${item.itemHash}-${item.characterId}`;
+                    farmingBlacklist.current.add(uniqueId);
+
+                    console.log(`[Farming Mode] Auto-siphoning Postmaster Item: ${item.name} (${item.itemHash}) to Vault...`);
+                    moveItem(item, "vault", item.characterId);
+                });
+            }
+        }, farmingInterval * 1000);
+
+        return () => clearInterval(timer);
+    }, [isFarmingEnabled, profile, farmingInterval, pullFromPostmaster, moveItem, selectedCharId]);
 
     // DnD Sensors
     const sensors = useSensors(
@@ -91,12 +140,14 @@ export default function InventoryPage() {
     };
 
     // Organized Data for View (Single Character)
+    const isGodRollFunc = useGodRollStore(s => s.isGodRoll);
+
     const organizedData = useMemo(() => {
         if (!profile) return null;
 
         const charItems: Record<string, Record<number, { equipped?: InventoryItem; inventory: InventoryItem[] }>> = {};
 
-        if (profile.characters) {
+        if (profile.characters && Array.isArray(profile.characters)) {
             profile.characters.forEach(c => {
                 charItems[c.characterId] = {};
                 BUCKET_ORDER.forEach(b => {
@@ -108,24 +159,7 @@ export default function InventoryPage() {
         if (profile.items) {
             profile.items.forEach(item => {
                 if (searchQuery) {
-                    const query = searchQuery.toLowerCase();
-                    const hasCommands = query.includes("is:") || query.includes("tag:");
-
-                    if (!hasCommands) {
-                        if (!item.name.toLowerCase().includes(query)) return;
-                    } else {
-                        // Basic command filtering
-                        if (query.includes("is:weapon") && item.itemType !== 3) return;
-                        if (query.includes("is:armor") && item.itemType !== 2) return;
-                        if (query.includes("is:exotic") && item.tierType !== 6) return;
-                        if (query.includes("is:legendary") && item.tierType !== 5) return;
-                        if (query.includes("is:kinetic") && item.damageType !== 1) return;
-                        if (query.includes("is:deepsight") && !item.isDeepsight) return;
-                        if (query.includes("is:crafted") && !item.isCrafted) return;
-                        if (query.includes("is:locked") && !item.isLocked) return;
-                        if (query.includes("tag:favorite") && item.tag !== "favorite") return;
-                        if (query.includes("tag:junk") && item.tag !== "junk") return;
-                    }
+                    if (!evaluateSearchQuery(item, searchQuery, isGodRollFunc)) return;
                 }
 
                 if (item.location === "character" && item.characterId && charItems[item.characterId]) {
@@ -154,52 +188,116 @@ export default function InventoryPage() {
         }
 
         return charItems;
-    }, [profile, searchQuery]);
+    }, [profile, searchQuery, isGodRollFunc]);
 
     const vaultItems = useMemo(() => {
         if (!profile || !profile.items) return [];
         return profile.items.filter(i => {
             if (i.location !== "vault") return false;
+
+            const trueBucket = i.intrinsicBucketHash || i.bucketHash;
+
+            // 1. Vault Cleanup: Hide anything that isn't in our core BUCKET_ORDER (ships, mats, transmat, etc)
+            if (!(BUCKET_ORDER as readonly number[]).includes(trueBucket)) return false;
+
+            // 2. Vault Quick Filter
+            if (vaultFilter === "weapons") {
+                if (trueBucket !== BUCKETS.KINETIC && trueBucket !== BUCKETS.ENERGY && trueBucket !== BUCKETS.POWER) return false;
+            } else if (vaultFilter === "armor") {
+                if (trueBucket !== BUCKETS.HELMET && trueBucket !== BUCKETS.GAUNTLETS && trueBucket !== BUCKETS.CHEST && trueBucket !== BUCKETS.LEG && trueBucket !== BUCKETS.CLASS_ITEM) return false;
+            } else if (typeof vaultFilter === "number") {
+                if (trueBucket !== vaultFilter) return false;
+            }
+
+            // 3. Text Search Match
             if (searchQuery) {
-                const query = searchQuery.toLowerCase();
-                if (!query.includes("is:") && !query.includes("tag:") && !i.name.toLowerCase().includes(query)) return false;
+                if (!evaluateSearchQuery(i, searchQuery, isGodRollFunc)) return false;
             }
             return true;
         }).sort((a, b) => (b.primaryStat || 0) - (a.primaryStat || 0));
-    }, [profile, searchQuery]);
+    }, [profile, searchQuery, isGodRollFunc, vaultFilter]);
 
 
-    if (isLoading && !profile) return <div className="flex items-center justify-center min-h-screen text-white/50 text-sm tracking-widest uppercase animate-pulse">Loading Data...</div>;
-    if (!profile) return <div className="flex items-center justify-center min-h-screen text-red-400 text-sm tracking-widest uppercase">Failed to load profile.</div>;
+    if (isLoading && !profile) return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+            <div className="w-16 h-16 rounded-2xl bg-wd-primary-600/15 border border-wd-primary-600/30 flex items-center justify-center wd-glow-pulse">
+                <RefreshCw size={28} className="text-wd-primary-400 animate-spin" />
+            </div>
+            <div className="space-y-2 text-center">
+                <p className="text-sm font-bold text-text-primary uppercase tracking-widest">Syncing Inventory</p>
+                <p className="text-xs text-text-tertiary">Establishing neural link with Bungie API...</p>
+            </div>
+            <div className="w-48 h-2 rounded-full overflow-hidden bg-bg-tertiary">
+                <div className="h-full bg-gradient-to-r from-wd-primary-600 to-wd-lilac rounded-full" style={{ width: '60%', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+            </div>
+        </div>
+    );
+    if (!profile || error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+                <div className="w-16 h-16 rounded-2xl bg-wd-danger/15 border border-wd-danger/30 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+                    <ShieldAlert size={32} className="text-wd-danger" />
+                </div>
+                <h1 className="text-2xl font-black tracking-widest text-text-primary uppercase">Neural Link Severed</h1>
+                <div className="wd-card p-5 max-w-lg border-wd-danger/20">
+                    <p className="text-sm text-text-secondary font-mono break-words leading-relaxed">
+                        {error || "Your secure session with Bungie.net has expired or was interrupted. Please re-authenticate to restore inventory access."}
+                    </p>
+                </div>
+                <button
+                    onClick={() => window.location.href = "/api/auth/logout"}
+                    className="px-8 py-3 bg-wd-danger/15 hover:bg-wd-danger/25 border border-wd-danger/30 text-wd-danger rounded-xl font-bold text-sm tracking-widest uppercase transition-all flex items-center gap-2"
+                >
+                    <RefreshCw size={14} /> Reconnect to Bungie
+                </button>
+            </div>
+        );
+    }
 
-    const selectedCharacter = profile.characters.find(c => c.characterId === selectedCharId);
+    const selectedCharacter = profile.characters?.find(c => c.characterId === selectedCharId);
 
     return (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <ItemConstantsProvider value={profile.itemConstants}>
-                <div className="flex flex-col h-full bg-bg-primary animate-fade-in min-h-screen pb-20">
-                    <Header title="Loadout Manager" subtitle="Professional Inventory Management" />
+                <div className="flex flex-col h-full animate-fade-in min-h-screen pb-20">
 
-                    {/* Controls Bar */}
-                    <div className="sticky top-0 z-30 bg-[#030712]/95 backdrop-blur-xl border-b border-white/10 px-6 py-3">
+                    {/* Controls Bar — WowDash Card Style */}
+                    <div className="sticky top-0 z-30 bg-bg-secondary/95 backdrop-blur-xl border-b border-border-subtle px-6 py-3">
                         <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                            {/* Character Selector (Always Visible Now) */}
+                            {/* Character Selector */}
                             <div className="w-full md:w-auto overflow-x-auto">
                                 <CharacterSelector characters={profile.characters} selectedId={selectedCharId} onSelect={setSelectedCharId} />
                             </div>
 
-                            {/* Search & Refresh */}
+                            {/* Search & Refresh & Farming */}
                             <div className="flex items-center gap-3 w-full md:w-auto">
                                 <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                                <button onClick={() => loadProfile()} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors">
+
+                                {searchQuery && (
+                                    <BulkActionDropdown
+                                        items={[
+                                            ...vaultItems,
+                                            ...(organizedData?.[selectedCharId]
+                                                ? Object.values(organizedData[selectedCharId]).flatMap(slot => [
+                                                    ...(slot.equipped && evaluateSearchQuery(slot.equipped, searchQuery, isGodRollFunc) ? [slot.equipped] : []),
+                                                    ...slot.inventory
+                                                ])
+                                                : [])
+                                        ]}
+                                    />
+                                )}
+
+                                <button onClick={() => loadProfile()} className="p-2 rounded-lg bg-bg-tertiary hover:bg-wd-primary-600/15 border border-border-subtle hover:border-wd-primary-600/30 text-text-secondary hover:text-text-primary transition-all" title="Reload Inventory">
                                     <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
                                 </button>
+                                <DensityToggle />
+                                <FarmingToggle />
                             </div>
                         </div>
                     </div>
 
                     <main className="flex-1 px-4 py-4 max-w-[1920px] mx-auto w-full h-[calc(100vh-140px)] overflow-hidden">
-                        {/* Unified View: Single Character + Vault */}
+                        {/* Unified View: Character + Vault */}
                         <div className="flex gap-4 h-full overflow-hidden">
                             {/* Selected Character */}
                             {selectedCharacter && organizedData && (
@@ -207,19 +305,21 @@ export default function InventoryPage() {
                                     character={selectedCharacter}
                                     items={organizedData[selectedCharId]}
                                     onInspect={setInspectItem}
+                                    compact={isCompactMode}
                                 />
                             )}
 
-                            {/* Vault */}
-                            <div className="flex-1 flex flex-col border border-white/10 rounded-xl bg-[#050914]/50 overflow-hidden relative">
-                                <div className="p-3 border-b border-white/10 bg-black/20 flex justify-between items-center">
-                                    <h2 className="text-sm font-bold text-text-secondary uppercase tracking-widest">Vault</h2>
-                                    <span className="text-xs text-text-tertiary bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                            {/* Vault — WowDash Card */}
+                            <div className="flex-1 flex flex-col wd-card overflow-hidden relative">
+                                <div className="wd-card-header">
+                                    <h2 className="text-sm font-bold text-text-primary uppercase tracking-widest">Vault</h2>
+                                    <span className="wd-badge wd-badge-primary">
                                         {vaultItems.length}
                                     </span>
                                 </div>
+                                <VaultFilterBar />
                                 <div className="flex-1 overflow-y-auto custom-scrollbar p-3">
-                                    <VaultGrid items={vaultItems} onItemClick={setInspectItem} />
+                                    <VaultGrid items={vaultItems} onItemClick={setInspectItem} compact={isCompactMode} />
                                 </div>
                             </div>
                         </div>
@@ -230,13 +330,14 @@ export default function InventoryPage() {
 
                     <DragOverlay>
                         {activeDragItem ? (
-                            <div className="w-12 h-12 rounded-sm bg-[#1e293b] border border-gold-primary overflow-hidden shadow-2xl relative z-[100]">
+                            <div className="w-12 h-12 rounded-sm bg-bg-tertiary border border-wd-primary-600 overflow-hidden shadow-2xl relative z-[100]">
                                 <Image src={`https://www.bungie.net${activeDragItem.icon}`} alt="Dragging" fill className="object-cover" unoptimized />
-                            </div>
+                            </div >
                         ) : null}
-                    </DragOverlay>
-                </div>
-            </ItemConstantsProvider>
-        </DndContext>
+                    </DragOverlay >
+                </div >
+                <ComparatorOverlay />
+            </ItemConstantsProvider >
+        </DndContext >
     );
 }

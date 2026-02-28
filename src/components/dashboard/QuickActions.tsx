@@ -13,37 +13,41 @@ export function QuickActions() {
             label: "Optimize Armor",
             href: "/builds",
             icon: Zap,
-            color: "text-gold-primary",
-            bg: "bg-gold-primary/10",
-            border: "border-gold-primary/20",
-            desc: "AUTO-FIX STATS"
+            color: "text-wd-warning",
+            bg: "bg-wd-warning/10",
+            border: "border-wd-warning/20",
+            desc: "AUTO-FIX STATS",
+            bgUrl: "https://www.bungie.net/img/destiny_content/pgcr/raid_nemesis.jpg"
         },
         {
             label: "God Roll Finder",
             href: "/inventory",
             icon: Crosshair,
-            color: "text-blue-400",
-            bg: "bg-blue-500/10",
-            border: "border-blue-500/20",
-            desc: "SCAN VAULT"
+            color: "text-wd-primary-400",
+            bg: "bg-wd-primary-600/10",
+            border: "border-wd-primary-600/20",
+            desc: "SCAN VAULT",
+            bgUrl: "https://www.bungie.net/img/destiny_content/pgcr/crucible_burnout.jpg"
         },
         {
             label: "Postmaster",
             href: "/inventory?filter=postmaster",
             icon: Box,
-            color: "text-green-400",
-            bg: "bg-green-500/10",
-            border: "border-green-500/20",
-            desc: "3 ITEMS WAITING"
+            color: "text-wd-success",
+            bg: "bg-wd-success/10",
+            border: "border-wd-success/20",
+            desc: "3 ITEMS WAITING",
+            bgUrl: "https://www.bungie.net/img/destiny_content/pgcr/social_tower_702.jpg"
         },
         {
             label: "Raid Loadout",
             href: "/loadouts",
             icon: Sword,
-            color: "text-purple-400",
-            bg: "bg-purple-500/10",
-            border: "border-purple-500/20",
-            desc: "EQUIP FOR DSC"
+            color: "text-wd-lilac",
+            bg: "bg-wd-lilac/10",
+            border: "border-wd-lilac/20",
+            desc: "EQUIP FOR DSC",
+            bgUrl: "https://www.bungie.net/img/destiny_content/pgcr/raid_deep_stone_crypt.jpg"
         }
     ];
 
@@ -53,21 +57,25 @@ export function QuickActions() {
                 <Link
                     key={i}
                     href={action.href}
-                    className="flex items-center gap-4 p-4 rounded-xl nexa-card hover:border-white/20 hover:bg-white/5 transition-all group"
+                    className="relative flex items-center gap-4 p-4 rounded-2xl wd-card hover:border-border-medium transition-all group overflow-hidden"
+                    style={{ backgroundImage: `url(${action.bgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }}
                 >
+                    {/* Dark overlay — more visible on hover */}
+                    <div className="absolute inset-0 bg-bg-secondary/[0.95] group-hover:bg-bg-secondary/[0.85] transition-all duration-500" />
+
                     <div className={cn(
-                        "p-3 rounded-lg flex items-center justify-center transition-colors border",
+                        "relative z-10 w-11 h-11 rounded-xl flex items-center justify-center transition-all border group-hover:scale-110",
                         action.bg,
                         action.color,
                         action.border
                     )}>
                         <action.icon size={20} />
                     </div>
-                    <div>
-                        <h3 className="text-sm font-bold text-white group-hover:text-gold-primary transition-colors uppercase tracking-wide">
+                    <div className="relative z-10">
+                        <h3 className="text-sm font-bold text-text-primary group-hover:text-wd-primary-400 transition-colors uppercase tracking-wide">
                             {action.label}
                         </h3>
-                        <p className="text-[10px] text-text-secondary font-medium tracking-wider">
+                        <p className="text-[10px] text-text-secondary font-medium tracking-wider font-mono">
                             {action.desc}
                         </p>
                     </div>

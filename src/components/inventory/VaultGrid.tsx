@@ -7,9 +7,10 @@ import { DroppableZone } from "./dnd/DroppableZone";
 interface VaultGridProps {
     items: InventoryItem[];
     onItemClick?: (item: InventoryItem) => void;
+    compact?: boolean;
 }
 
-export function VaultGrid({ items, onItemClick }: VaultGridProps) {
+export function VaultGrid({ items, onItemClick, compact = false }: VaultGridProps) {
     return (
         <DroppableZone id="vault-main" data={{ type: "vault" }} className="h-full w-full">
             <div className="flex flex-wrap content-start" style={{ gap: "5px" }}>
@@ -17,7 +18,7 @@ export function VaultGrid({ items, onItemClick }: VaultGridProps) {
                     <ItemCard
                         key={`${item.itemInstanceId || item.itemHash}-${index}`}
                         item={item}
-                        compact={false}
+                        compact={compact}
                         bucketHash={138197802}
                         onClick={() => onItemClick?.(item)}
                     />

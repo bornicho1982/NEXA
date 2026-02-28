@@ -3,6 +3,8 @@
 import { InventoryItem, ItemConstants } from "@/lib/inventory/service";
 import { cn } from "@/lib/utils";
 import { useItemConstants } from "./ItemConstantsContext";
+import { useGodRollStore } from "@/lib/store/god-rolls";
+import { ThumbsUp, Star, Check, Trash2, Archive } from "lucide-react";
 
 // ─── Bungie CDN prefix ───
 const B = "https://www.bungie.net";
@@ -35,6 +37,10 @@ export function DIMItemTile({ item, className, onClick, compact, itemConstants: 
     const isDeepsight = item.isDeepsight;
     const isLocked = item.isLocked;
     const isWeapon = item.itemType === 3;
+
+    // ─── God Roll Check ───
+    const equippedPlugs = item.sockets?.filter(s => s.isEnabled).map(s => s.plugHash!) || [];
+    const isGodRoll = useGodRollStore(s => s.isGodRoll(item.itemHash, equippedPlugs));
 
     // ─── Item Icon Size ───
     // Standard size for Character column (w-[68px])
@@ -97,7 +103,7 @@ export function DIMItemTile({ item, className, onClick, compact, itemConstants: 
     // ─── 3. Badge Logic ───
     const power = item.primaryStat;
     const isStackable = (item.maxStackSize ?? 1) > 1;
-    const showBadge = !!(power || (isStackable && item.quantity > 1));
+    const showBadge = !!(power || (isStackable && item.quantity > 1) || item.tag || (isGodRoll && isWeapon));
     const badgeContent = isStackable && item.quantity > 1
         ? item.quantity.toString()
         : power?.toString() ?? "";
@@ -355,6 +361,17 @@ export function DIMItemTile({ item, className, onClick, compact, itemConstants: 
                             }}
                         />
                     )}
+
+                    {/* God Roll & Tags inserted here */}
+                    <div className="flex items-center gap-[2px] ml-1">
+                        {isGodRoll && isWeapon && (
+                            <ThumbsUp className={cn("w-[10px] h-[10px] text-yellow-600 fill-yellow-600", isMasterwork ? "text-yellow-800 fill-yellow-800" : "")} />
+                        )}
+                        {item.tag === "favorite" && <Star className="w-[10px] h-[10px] text-red-500 fill-red-500 stroke-[2]" />}
+                        {item.tag === "keep" && <Check className="w-[10px] h-[10px] stroke-[3] text-green-600" />}
+                        {item.tag === "junk" && <Trash2 className="w-[10px] h-[10px] stroke-[2.5] text-orange-600" />}
+                        {item.tag === "archive" && <Archive className="w-[10px] h-[10px] stroke-[2.5] text-blue-600" />}
+                    </div>
 
 
 

@@ -71,11 +71,13 @@ export function LoadoutBuilder({ inventory }: LoadoutBuilderProps) {
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-8rem)]">
                 {/* Left: Inventory Source */}
-                <div className="lg:col-span-1 bg-bg-secondary rounded-xl p-4 flex flex-col border border-border-subtle h-full overflow-hidden">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <BackpackIcon className="text-gold-primary" /> Arsenal
-                    </h3>
-                    <div className="grid grid-cols-4 gap-2 overflow-y-auto pr-2 pb-20">
+                <div className="lg:col-span-1 wd-card flex flex-col h-full overflow-hidden">
+                    <div className="wd-card-header">
+                        <h3 className="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2">
+                            <BackpackIcon className="text-wd-primary-400" /> Arsenal
+                        </h3>
+                    </div>
+                    <div className="grid grid-cols-4 gap-2 overflow-y-auto p-4 pb-20 custom-scrollbar">
                         {inventory.map(item => (
                             <DraggableItem key={item.id} item={item} />
                         ))}
@@ -83,40 +85,50 @@ export function LoadoutBuilder({ inventory }: LoadoutBuilderProps) {
                 </div>
 
                 {/* Right: Loadout Drop Zones */}
-                <div className="lg:col-span-2 bg-bg-secondary/50 rounded-xl p-6 border border-border-subtle flex flex-col h-full relative overflow-y-auto">
-                    <div className="flex justify-between items-center mb-8">
+                <div className="lg:col-span-2 wd-card flex flex-col h-full overflow-hidden">
+                    <div className="wd-card-header">
                         <div>
-                            <h2 className="text-2xl font-bold text-white">New Loadout</h2>
-                            <p className="text-sm text-text-secondary">Drag items to equip them.</p>
+                            <h2 className="text-sm font-bold text-text-primary uppercase tracking-widest">New Loadout</h2>
+                            <p className="text-xs text-text-tertiary mt-0.5">Drag items to equip them.</p>
                         </div>
                         <div className="flex gap-2">
-                            <button className="flex items-center gap-2 px-4 py-2 bg-gold-primary text-bg-primary font-bold rounded hover:bg-gold-primary/90 transition-colors">
-                                <Save size={16} /> Save
+                            <button className="flex items-center gap-2 px-5 py-2.5 bg-wd-primary-600 text-white font-bold text-sm rounded-xl hover:bg-wd-primary-700 transition-colors shadow-lg shadow-wd-primary-600/25">
+                                <Save size={14} /> Save
                             </button>
-                            <button className="p-2 bg-bg-tertiary text-white rounded hover:bg-white/10 transition-colors">
-                                <Share2 size={16} />
+                            <button className="p-2.5 bg-bg-tertiary text-text-secondary rounded-xl hover:bg-white/5 hover:text-text-primary transition-colors border border-border-subtle">
+                                <Share2 size={14} />
                             </button>
                         </div>
                     </div>
+                    <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
 
-                    <div className="flex flex-col md:flex-row gap-8 items-start justify-center flex-1">
-                        {/* Armor Left */}
-                        <div className="flex flex-col gap-4">
-                            <DroppableSlot bucket={BUCKETS.HELMET} label="Helmet" item={loadout[BUCKETS.HELMET]} />
-                            <DroppableSlot bucket={BUCKETS.GAUNTLETS} label="Gauntlets" item={loadout[BUCKETS.GAUNTLETS]} />
-                            <DroppableSlot bucket={BUCKETS.CHEST} label="Chest" item={loadout[BUCKETS.CHEST]} />
-                            <DroppableSlot bucket={BUCKETS.LEGS} label="Legs" item={loadout[BUCKETS.LEGS]} />
-                            <DroppableSlot bucket={BUCKETS.CLASS} label="Class Item" item={loadout[BUCKETS.CLASS]} />
-                        </div>
+                        <div className="flex flex-col md:flex-row gap-8 items-start justify-center flex-1">
+                            {/* Armor Left */}
+                            <div className="flex flex-col gap-4">
+                                <DroppableSlot bucket={BUCKETS.HELMET} label="Helmet" item={loadout[BUCKETS.HELMET]} />
+                                <DroppableSlot bucket={BUCKETS.GAUNTLETS} label="Gauntlets" item={loadout[BUCKETS.GAUNTLETS]} />
+                                <DroppableSlot bucket={BUCKETS.CHEST} label="Chest" item={loadout[BUCKETS.CHEST]} />
+                                <DroppableSlot bucket={BUCKETS.LEGS} label="Legs" item={loadout[BUCKETS.LEGS]} />
+                                <DroppableSlot bucket={BUCKETS.CLASS} label="Class Item" item={loadout[BUCKETS.CLASS]} />
+                            </div>
 
-                        {/* Guardian Visual Center (Placeholder) */}
-                        <div className="hidden md:flex items-center justify-center w-64 h-[500px] bg-[url('/patterns/guardian_silhouette.png')] bg-contain bg-center bg-no-repeat opacity-20" />
+                            {/* Guardian Visual Center */}
+                            <div className="hidden md:flex items-center justify-center w-64 h-[500px] relative">
+                                <div className="absolute inset-0 bg-gradient-to-b from-wd-primary-600/5 via-transparent to-wd-lilac/5 rounded-2xl" />
+                                <div className="text-center">
+                                    <div className="w-24 h-24 rounded-full bg-bg-tertiary border border-border-subtle mx-auto mb-4 flex items-center justify-center">
+                                        <Shield size={32} className="text-text-tertiary" />
+                                    </div>
+                                    <p className="text-[10px] text-text-tertiary uppercase tracking-widest font-bold">Guardian</p>
+                                </div>
+                            </div>
 
-                        {/* Weapons Right */}
-                        <div className="flex flex-col gap-4">
-                            <DroppableSlot bucket={BUCKETS.KINETIC} label="Kinetic" item={loadout[BUCKETS.KINETIC]} />
-                            <DroppableSlot bucket={BUCKETS.ENERGY} label="Energy" item={loadout[BUCKETS.ENERGY]} />
-                            <DroppableSlot bucket={BUCKETS.POWER} label="Power" item={loadout[BUCKETS.POWER]} />
+                            {/* Weapons Right */}
+                            <div className="flex flex-col gap-4">
+                                <DroppableSlot bucket={BUCKETS.KINETIC} label="Kinetic" item={loadout[BUCKETS.KINETIC]} />
+                                <DroppableSlot bucket={BUCKETS.ENERGY} label="Energy" item={loadout[BUCKETS.ENERGY]} />
+                                <DroppableSlot bucket={BUCKETS.POWER} label="Power" item={loadout[BUCKETS.POWER]} />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -124,7 +136,7 @@ export function LoadoutBuilder({ inventory }: LoadoutBuilderProps) {
 
             <DragOverlay>
                 {activeItem ? (
-                    <div className="w-16 h-16 rounded border-2 border-gold-primary overflow-hidden shadow-2xl relative z-50 pointer-events-none">
+                    <div className="w-16 h-16 rounded border-2 border-wd-primary-600 overflow-hidden shadow-2xl relative z-50 pointer-events-none">
                         <Image
                             src={activeItem.icon.startsWith("http") ? activeItem.icon : `${BUNGIE_ROOT}${activeItem.icon}`}
                             alt={activeItem.name} fill className="object-cover" unoptimized
@@ -155,7 +167,7 @@ function DraggableItem({ item }: { item: LoadoutItem }) {
             {...attributes}
             className={cn(
                 "aspect-square bg-bg-tertiary rounded-sm border border-transparent cursor-grab active:cursor-grabbing relative group overflow-hidden shadow-sm transition-all",
-                isDragging ? "opacity-30" : "hover:border-gold-primary hover:shadow-gold-primary/20"
+                isDragging ? "opacity-30" : "hover:border-wd-primary-600 hover:shadow-wd-primary-600/20"
             )}
         >
             <Image
@@ -187,13 +199,13 @@ function DroppableSlot({ bucket, label, item }: { bucket: number, label: string,
                 // Empty State
                 !item && "border border-border-medium bg-bg-tertiary/30 shadow-inner",
                 // Hover State
-                isOver && !item && "border-gold-primary/50 bg-gold-primary/5 shadow-[0_0_15px_rgba(245,207,71,0.1)] scale-105",
+                isOver && !item && "border-wd-primary-600/50 bg-wd-primary-600/5 shadow-[0_0_15px_rgba(245,207,71,0.1)] scale-105",
                 // Filled State (border handled by inner item usually, but here we wrapper)
                 item && "border-transparent bg-transparent"
             )}
         >
             {item ? (
-                <div className="relative w-full h-full rounded-lg overflow-hidden group shadow-lg ring-1 ring-white/10 hover:ring-gold-primary/50 transition-all">
+                <div className="relative w-full h-full rounded-lg overflow-hidden group shadow-lg ring-1 ring-white/10 hover:ring-wd-primary-600/50 transition-all">
                     <Image
                         src={item.icon.startsWith("http") ? item.icon : `${BUNGIE_ROOT}${item.icon}`}
                         alt={item.name} fill className="object-cover" unoptimized

@@ -64,12 +64,12 @@ export function ClanRoster() {
                                         {member.name}
                                     </span>
                                     {member.role !== "Member" && (
-                                        <Star size={12} className={cn("fill-current", member.role === "Founder" ? "text-gold-primary" : "text-text-tertiary")} />
+                                        <Star size={12} className={cn("fill-current", member.role === "Founder" ? "text-wd-primary-400" : "text-text-tertiary")} />
                                     )}
                                 </div>
                                 <div className="text-xs text-text-tertiary">
                                     {member.isOnline ? (
-                                        <span className="text-gold-highlight">{member.activity}</span>
+                                        <span className="text-wd-warning">{member.activity}</span>
                                     ) : (
                                         <span>Last seen 2d ago</span>
                                     )}

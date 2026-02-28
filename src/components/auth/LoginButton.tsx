@@ -12,7 +12,7 @@ export function LoginButton() {
             onClick={login}
             disabled={isLoading}
             size="lg"
-            className="group relative h-14 px-8 text-base bg-gold-primary text-bg-primary font-bold hover:bg-gold-primary/90 shadow-[0_0_20px_rgba(247,181,56,0.3)] hover:shadow-[0_0_30px_rgba(247,181,56,0.5)] transition-all duration-300"
+            className="group relative h-14 px-8 text-base bg-wd-primary-600 text-bg-primary font-bold hover:bg-wd-primary-600/90 shadow-[0_0_20px_rgba(247,181,56,0.3)] hover:shadow-[0_0_30px_rgba(247,181,56,0.5)] transition-all duration-300"
         >
             <Shield className="mr-3 h-5 w-5 opacity-80" />
             <span>Initialize Uplink</span>

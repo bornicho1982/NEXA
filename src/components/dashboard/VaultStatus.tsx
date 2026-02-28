@@ -36,8 +36,8 @@ export function VaultStatus({ used, total }: VaultStatusProps) {
                         className={cn(
                             "absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out",
                             isOverCapacity
-                                ? "bg-gradient-to-r from-gold-primary to-status-error"
-                                : "bg-gradient-to-r from-blue-vanguard to-gold-primary"
+                                ? "bg-gradient-to-r from-wd-primary-600 to-status-error"
+                                : "bg-gradient-to-r from-blue-vanguard to-wd-primary-600"
                         )}
                         style={{ width: `${percentage}%` }}
                     />

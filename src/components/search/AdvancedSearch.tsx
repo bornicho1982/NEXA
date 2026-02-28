@@ -75,15 +75,15 @@ export function AdvancedSearch({
 
     return (
         <div className={cn("relative w-full z-40 group", className)}>
-            <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-gold-primary/20 to-blue-vanguard/20 opacity-0 group-focus-within:opacity-100 transition-opacity blur duration-500" />
+            <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-wd-primary-600/20 to-blue-vanguard/20 opacity-0 group-focus-within:opacity-100 transition-opacity blur duration-500" />
             <Combobox value={query} onChange={handleChange} immediate>
                 <div className="relative w-full">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary group-focus-within:text-gold-primary transition-colors" />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary group-focus-within:text-wd-primary-400 transition-colors" />
 
                     <ComboboxInput
                         className={cn(
                             "w-full rounded-xl bg-bg-secondary/80 backdrop-blur-sm border border-border-medium py-2.5 pl-10 pr-12 text-sm text-text-primary placeholder:text-text-tertiary",
-                            "focus:outline-none focus:bg-bg-secondary focus:border-gold-primary/50 transition-all font-medium",
+                            "focus:outline-none focus:bg-bg-secondary focus:border-wd-primary-600/50 transition-all font-medium",
                             "shadow-inner shadow-black/20"
                         )}
                         placeholder={placeholder}
@@ -126,7 +126,7 @@ export function AdvancedSearch({
                                 className={({ focus }) =>
                                     cn(
                                         "relative cursor-pointer select-none py-2 px-3 mx-1 my-0.5 rounded-lg transition-colors",
-                                        focus ? "bg-gold-primary/10 text-gold-primary" : "text-text-secondary"
+                                        focus ? "bg-wd-primary-600/10 text-wd-primary-400" : "text-text-secondary"
                                     )
                                 }
                             >

@@ -11,7 +11,7 @@ const CLARITY_CLASS_MAP: Record<ClarityClassName, string> = {
     center: "text-center",
     communityDescription: "opacity-90",
     descriptionDivider: "border-t border-white/20 my-2 w-full",
-    enhancedArrow: "text-gold-primary mr-1",
+    enhancedArrow: "text-wd-primary-400 mr-1",
     green: "text-[#10B981]", // Strand/Generic green
     link: "underline cursor-pointer",
     purple: "text-[#8B5CF6]", // Void color
@@ -19,7 +19,7 @@ const CLARITY_CLASS_MAP: Record<ClarityClassName, string> = {
     pvp: "text-red-400 font-semibold",  // Often represents PvP specifically
     spacer: "mt-1",
     title: "text-sm font-bold text-white mb-1",
-    yellow: "text-gold-primary", // Solar/Highlight
+    yellow: "text-wd-primary-400", // Solar/Highlight
 };
 
 export function ClarityDescription({ lines }: { lines: ClarityLine[] }) {

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useBuildStore } from "@/lib/store/build-crafter";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { PlugSelector } from "./PlugSelector";
 
@@ -29,6 +28,7 @@ export function SubclassConfigurator() {
     const { subclass, setSubclass, subclassPlugs, setSubclassPlug } = useBuildStore();
     const [availableSubclasses, setAvailableSubclasses] = useState<SubclassOption[]>([]);
     const [loading, setLoading] = useState(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedSocket, setSelectedSocket] = useState<{ index: number; title: string; options: any[] } | null>(null);
 
     // Fetch subclasses (hardcoded to Warlock for now, ideally strictly typed or dynamic)
@@ -64,7 +64,8 @@ export function SubclassConfigurator() {
             {availableSubclasses.map((sc) => (
                 <button
                     key={sc.hash}
-                    onClick={() => setSubclass(sc as any)} // Cast because store expects Item type which is loose 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    onClick={() => setSubclass(sc as any)} // Cast because store expects Item type which is loose
                     className="p-4 bg-bg-secondary rounded hover:bg-bg-tertiary flex flex-col items-center gap-2 transition-colors"
                 >
                     <Image src={`https://www.bungie.net${sc.icon}`} width={48} height={48} alt={sc.name} className="bg-black/50 rounded-full" unoptimized />
@@ -105,10 +106,11 @@ export function SubclassConfigurator() {
                         {availableSubclasses.map(sc => (
                             <button
                                 key={sc.hash}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 onClick={() => setSubclass(sc as any)}
                                 className={cn(
                                     "w-6 h-6 rounded-full overflow-hidden border border-transparent hover:border-text-primary transition-all",
-                                    sc.hash === fullSubclass.hash ? "border-gold-primary scale-110" : "opacity-50 hover:opacity-100"
+                                    sc.hash === fullSubclass.hash ? "border-wd-primary-600 scale-110" : "opacity-50 hover:opacity-100"
                                 )}
                             >
                                 <Image src={`https://www.bungie.net${sc.icon}`} width={24} height={24} alt={sc.name} unoptimized />

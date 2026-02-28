@@ -116,11 +116,11 @@ export function BuildArchitect() {
                                     return (
                                         <div key={key} className="group">
                                             <div className="flex items-center justify-between text-sm">
-                                                <span className={cn("transition-colors", isResilience ? "text-gold-primary font-bold" : "text-text-secondary group-hover:text-text-primary")}>
+                                                <span className={cn("transition-colors", isResilience ? "text-wd-primary-400 font-bold" : "text-text-secondary group-hover:text-text-primary")}>
                                                     {label}
                                                 </span>
                                                 <div className="flex items-center gap-2">
-                                                    <span className={cn("font-mono font-bold", value >= 100 ? "text-gold-primary" : "text-text-primary")}>
+                                                    <span className={cn("font-mono font-bold", value >= 100 ? "text-wd-primary-400" : "text-text-primary")}>
                                                         {value}
                                                     </span>
                                                 </div>
@@ -129,7 +129,7 @@ export function BuildArchitect() {
                                             {/* Tier Bar */}
                                             <div className="h-1 w-full bg-bg-tertiary mt-1 rounded-full overflow-hidden">
                                                 <div
-                                                    className={cn("h-full rounded-full", isResilience ? "bg-gold-primary" : "bg-text-secondary")}
+                                                    className={cn("h-full rounded-full", isResilience ? "bg-wd-primary-600" : "bg-text-secondary")}
                                                     style={{ width: `${Math.min(value, 100)}%` }}
                                                 />
                                             </div>
@@ -169,8 +169,8 @@ export function BuildArchitect() {
 
                         {/* Artifice Armor Config */}
                         <div className="mt-6 pt-6 border-t border-border-medium">
-                            <h3 className="text-sm font-bold text-gold-primary uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-gold-primary animate-pulse" />
+                            <h3 className="text-sm font-bold text-wd-primary-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-wd-primary-600 animate-pulse" />
                                 Artifice Tuning
                             </h3>
                             <div className="space-y-2">
@@ -276,7 +276,7 @@ export function BuildArchitect() {
                 <DragOverlay>
                     {activeDragItem ? (
                         <div className="w-20 h-20 opacity-80 cursor-grabbing">
-                            <ItemCard item={activeDragItem} className="ring-2 ring-gold-primary shadow-2xl scale-105" />
+                            <ItemCard item={activeDragItem} className="ring-2 ring-wd-primary-600 shadow-2xl scale-105" />
                         </div>
                     ) : null}
                 </DragOverlay>,

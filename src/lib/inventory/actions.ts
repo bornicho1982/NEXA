@@ -183,7 +183,7 @@ export async function updateItemAnnotationAction(params: {
         if (!user) throw new Error("Unauthorized");
 
         if (!params.instanceId) {
-             return { success: false, error: "Only instanced items can be tagged for now." };
+            return { success: false, error: "Only instanced items can be tagged for now." };
         }
 
         await prisma.itemAnnotation.upsert({
@@ -195,7 +195,7 @@ export async function updateItemAnnotationAction(params: {
             },
             create: {
                 userId: user.id,
-                itemHash: params.itemHash,
+                itemHash: String(params.itemHash),
                 instanceId: params.instanceId,
                 tag: params.tag,
                 notes: params.notes,

@@ -1,46 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 @import "tailwindcss";
 
 @theme {
-  /* 🌑 Midnight Protocol Surfaces (RaidHub Aesthetic) */
-  --color-bg-primary: #030712;
-  /* Deepest Rich Black */
-  --color-bg-secondary: #0f172a;
-  /* Dark Blue-Grey (Sidebar/Cards) */
-  --color-bg-tertiary: #1e293b;
-  /* Lighter Grey for interactions */
+  /* ══════════════════════════════════════════════════════
+     🎨 WowDash Design Tokens — Adapted for NEXA
+     Dark-first dashboard with WowDash's color DNA
+     ══════════════════════════════════════════════════════ */
 
-  /* 💎 Glassmorphism */
-  --color-glass-surface: rgba(255, 255, 255, 0.03);
+  /* 🌑 Base Surfaces (Dark Mode Primary) */
+  --color-bg-primary: #1b2431;
+  --color-bg-secondary: #273142;
+  --color-bg-tertiary: #323d4e;
+
+  /* 💎 Card / Glass Surfaces */
+  --color-glass-surface: rgba(255, 255, 255, 0.04);
   --color-glass-border: rgba(255, 255, 255, 0.08);
-  /* Crisp, subtle border */
-  --color-glass-highlight: rgba(255, 255, 255, 0.1);
+  --color-glass-highlight: rgba(255, 255, 255, 0.12);
 
-  /* ⚡ Neon Accents */
-  --color-gold-primary: #f97316;
-  /* Solar Orange (Neon) */
-  --color-gold-secondary: #fdba74;
-  /* Soft Orange */
-  --color-teal-accent: #14b8a6;
-  /* Arc/Stasis Teal (Neon) */
-  --color-void-accent: #a855f7;
-  /* Void Purple */
+  /* 💙 Primary (WowDash Brand Blue) */
+  --color-wd-primary-50: #e4f1ff;
+  --color-wd-primary-100: #bfdcff;
+  --color-wd-primary-200: #95c7ff;
+  --color-wd-primary-300: #6bb1ff;
+  --color-wd-primary-400: #519fff;
+  --color-wd-primary-500: #458eff;
+  --color-wd-primary-600: #487fff;
+  --color-wd-primary-700: #486cea;
+  --color-wd-primary-800: #4759d6;
+  --color-wd-primary-900: #4536b6;
+
+  /* ✅ Success */
+  --color-wd-success: #45b369;
+  --color-wd-success-surface: #daf0e1;
+  --color-wd-success-border: #b5e1c3;
+
+  /* ⚠️ Warning */
+  --color-wd-warning: #ff9f29;
+  --color-wd-warning-surface: #fff9e2;
+  --color-wd-warning-border: #ffeba6;
+
+  /* 🔴 Danger */
+  --color-wd-danger: #ef4a00;
+  --color-wd-danger-surface: #fcdae2;
+  --color-wd-danger-border: #f9b5c6;
+
+  /* 💜 Lilac */
+  --color-wd-lilac: #8252e9;
+  --color-wd-lilac-light: rgba(130, 82, 233, 0.15);
+
+  /* 🩵 Info */
+  --color-wd-info: #144bd6;
+  --color-wd-info-surface: #e7eefc;
+  --color-wd-info-border: #aecafc;
+
+  /* 🌊 Cyan */
+  --color-wd-cyan: #00b8f2;
+
+  /* 🟣 Indigo */
+  --color-wd-indigo: #7f27ff;
+
+  /* ⚡ NEXA Accent Colors (game elements) */
+  --color-gold-primary: #ff9f29;
+  --color-gold-secondary: #ffeba6;
+  --color-teal-accent: #00b8f2;
+  --color-void-accent: #8252e9;
 
   /* ✒️ Typography */
-  --color-text-primary: #f8fafc;
-  /* White (High Contrast) */
-  --color-text-secondary: #94a3b8;
-  /* Muted Blue-Grey */
-  --color-text-tertiary: #64748b;
-  /* Darker Grey */
+  --color-text-primary: #f5f6fa;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #6b7280;
 
-  /* 🛡️ Status */
-  --color-status-success: #22c55e;
-  --color-status-warning: #eab308;
-  --color-status-error: #ef4444;
+  /* 🛡️ Borders */
+  --color-border-subtle: rgba(209, 213, 219, 0.2);
+  --color-border-medium: rgba(209, 213, 219, 0.35);
 
-  /* 🖼️ Borders */
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-medium: rgba(255, 255, 255, 0.15);
+  /* 🔲 Neutral Scale (dark mode) */
+  --color-neutral-50: #1b2431;
+  --color-neutral-100: #273142;
+  --color-neutral-200: #323d4e;
+  --color-neutral-300: #4b5563;
+  --color-neutral-400: #6b7280;
+  --color-neutral-500: #9ca3af;
+  --color-neutral-600: #d1d5db;
+  --color-neutral-700: #ebecef;
+  --color-neutral-800: #f3f4f6;
+  --color-neutral-900: #f5f6fa;
+
+  /* 🌀 Shadows */
+  --shadow-card: 0 4px 24px 0 rgba(0, 0, 0, 0.25);
+  --shadow-elevated: 0 8px 40px 0 rgba(0, 0, 0, 0.4);
+  --shadow-glow-primary: 0 0 20px rgba(72, 127, 255, 0.25);
+  --shadow-glow-gold: 0 0 15px rgba(255, 159, 41, 0.3);
 
   /* Animations */
   --animate-fade-in: fadeIn 0.4s ease-out;
@@ -84,9 +134,9 @@
   }
 }
 
-/* 
-  🚀 NEXA Utility Classes (RaidHub Style) 
-*/
+/* ══════════════════════════════════════════════════════
+   🧩 NEXA Utility Classes (WowDash Style)
+   ══════════════════════════════════════════════════════ */
 
 @utility nexa-glass {
   @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl;
@@ -97,24 +147,36 @@
 }
 
 @utility nexa-card {
-  @apply nexa-glass rounded-xl overflow-hidden;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
 @utility nexa-sidebar {
-  @apply bg-[#050510]/90 backdrop-blur-2xl border-r border-white/5;
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border-subtle);
 }
 
-/* Global Reset */
+/* ══════════════════════════════════════════════════════
+   🔧 Global Reset & Defaults
+   ══════════════════════════════════════════════════════ */
 html,
 body {
   height: 100%;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Scrollbar */
+/* ══════════════════════════════════════════════════════
+   📜 Custom Scrollbar (WowDash Dark Style)
+   ══════════════════════════════════════════════════════ */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -125,10 +187,265 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--color-neutral-300);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--color-neutral-400);
+}
+
+/* ══════════════════════════════════════════════════════
+   🃏 WowDash Card Patterns
+   ══════════════════════════════════════════════════════ */
+.wd-card {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.wd-card:hover {
+  border-color: var(--color-border-medium);
+}
+
+.wd-card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wd-card-body {
+  padding: 1.5rem;
+}
+
+.wd-card-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ══════════════════════════════════════════════════════
+   🏷️ WowDash Badge Patterns
+   ══════════════════════════════════════════════════════ */
+.wd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.wd-badge-primary {
+  background-color: rgba(72, 127, 255, 0.15);
+  color: var(--color-wd-primary-400);
+}
+
+.wd-badge-success {
+  background-color: rgba(69, 179, 105, 0.15);
+  color: var(--color-wd-success);
+}
+
+.wd-badge-warning {
+  background-color: rgba(255, 159, 41, 0.15);
+  color: var(--color-wd-warning);
+}
+
+.wd-badge-danger {
+  background-color: rgba(239, 74, 0, 0.15);
+  color: var(--color-wd-danger);
+}
+
+.wd-badge-lilac {
+  background-color: var(--color-wd-lilac-light);
+  color: var(--color-wd-lilac);
+}
+
+/* ══════════════════════════════════════════════════════
+   🔘 WowDash Button Patterns
+   ══════════════════════════════════════════════════════ */
+.wd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+.wd-btn-primary {
+  background-color: var(--color-wd-primary-600);
+  color: white;
+}
+
+.wd-btn-primary:hover {
+  background-color: var(--color-wd-primary-700);
+  box-shadow: var(--shadow-glow-primary);
+}
+
+.wd-btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--color-border-medium);
+  color: var(--color-text-secondary);
+}
+
+.wd-btn-outline:hover {
+  background-color: var(--color-glass-highlight);
+  border-color: var(--color-wd-primary-600);
+  color: var(--color-text-primary);
+}
+
+.wd-btn-danger {
+  background-color: rgba(239, 74, 0, 0.15);
+  color: var(--color-wd-danger);
+}
+
+.wd-btn-danger:hover {
+  background-color: var(--color-wd-danger);
+  color: white;
+}
+
+/* ══════════════════════════════════════════════════════
+   📊 WowDash Stat Widget
+   ══════════════════════════════════════════════════════ */
+.wd-stat-widget {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.wd-stat-widget:hover {
+  border-color: var(--color-wd-primary-600);
+  box-shadow: var(--shadow-glow-primary);
+  transform: translateY(-2px);
+}
+
+.wd-stat-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Custom scrollbar for specific containers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-400);
+}
+
+/* ══════════════════════════════════════════════════════
+   ✨ WowDash Micro-Animations
+   ══════════════════════════════════════════════════════ */
+
+/* Shimmer effect for loading skeletons */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.wd-shimmer {
+  background: linear-gradient(90deg,
+      var(--color-bg-secondary) 0%,
+      var(--color-bg-tertiary) 50%,
+      var(--color-bg-secondary) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Gentle float for highlighted elements */
+@keyframes wd-float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.wd-float {
+  animation: wd-float 3s ease-in-out infinite;
+}
+
+/* Glow pulse for notifications / important items */
+@keyframes wd-glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(72, 127, 255, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 16px rgba(72, 127, 255, 0.4);
+  }
+}
+
+.wd-glow-pulse {
+  animation: wd-glow-pulse 2s ease-in-out infinite;
+}
+
+/* Slide up entrance */
+@keyframes wd-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wd-slide-up {
+  animation: wd-slide-up 0.3s ease-out forwards;
+}
+
+/* Subtle scale on hover */
+.wd-hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wd-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }

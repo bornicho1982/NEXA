@@ -25,8 +25,8 @@ export function PostmasterPanel({ characterId }: PostmasterPanelProps) {
             id={`postmaster-${characterId}`}
             data={{ type: "postmaster", characterId }}
             className={cn(
-                "p-3 rounded-lg border bg-black/20 backdrop-blur-sm transition-colors",
-                isFull ? "border-red-500/50 bg-red-500/5 animate-pulse" : "border-white/10 hover:border-white/20"
+                "p-3 rounded-lg border bg-bg-primary/40 backdrop-blur-sm transition-colors",
+                isFull ? "border-wd-danger/50 bg-wd-danger/5 animate-pulse" : "border-border-subtle hover:border-border-medium"
             )}
         >
             <div className="flex justify-between items-center mb-2">
@@ -36,7 +36,7 @@ export function PostmasterPanel({ characterId }: PostmasterPanelProps) {
                 </h3>
                 <span className={cn(
                     "text-[9px] font-mono px-1.5 py-0.5 rounded",
-                    isFull ? "bg-red-500 text-white" : "bg-white/10 text-text-tertiary"
+                    isFull ? "bg-wd-danger text-white" : "bg-bg-tertiary text-text-tertiary"
                 )}>
                     {count}/21
                 </span>

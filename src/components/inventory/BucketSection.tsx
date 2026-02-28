@@ -19,7 +19,7 @@ export function BucketSection({ label, bucket, data, simple = false, compact = f
             <div className={cn("flex items-start flex-wrap", simple ? "flex-col items-center gap-1" : "flex-row")} style={{ gap: simple ? undefined : "5px" }}>
                 {/* 🟢 Equipped Item */}
                 <div className="shrink-0 relative">
-                    {!simple && <div className="absolute -left-1.5 inset-y-2 w-0.5 bg-gold-primary/50 rounded-full opacity-60" />}
+                    {!simple && <div className="absolute -left-1.5 inset-y-2 w-0.5 bg-wd-primary-600/50 rounded-full opacity-60" />}
                     <ItemCard
                         item={data.equipped}
                         category={label}

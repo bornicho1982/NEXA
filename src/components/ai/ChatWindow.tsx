@@ -5,8 +5,7 @@ import { useAIChat } from "@/hooks/useAIChat";
 import { MessageBubble } from "./MessageBubble";
 import { ThinkingIndicator } from "./ThinkingIndicator";
 import { Send, Sparkles, Trash2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const SUGGESTION_CHIPS = [
     "Analyze my loadout",
@@ -46,7 +45,7 @@ export function ChatWindow() {
             {/* Header */}
             <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-bg-secondary/80 backdrop-blur-sm z-10">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gold-primary/10 rounded-lg text-gold-primary">
+                    <div className="p-2 bg-wd-primary-600/10 rounded-lg text-wd-primary-400">
                         <Sparkles size={18} />
                     </div>
                     <div>
@@ -75,7 +74,7 @@ export function ChatWindow() {
                     {/* Welcome State if empty */}
                     {messages.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-10 text-center opacity-60">
-                            <Sparkles size={48} className="text-gold-primary mb-4" />
+                            <Sparkles size={48} className="text-wd-primary-400 mb-4" />
                             <h3 className="text-lg font-bold text-text-primary mb-2">How can I assist you, Guardian?</h3>
                             <p className="text-sm text-text-secondary max-w-xs">
                                 I can access the Destiny 2 Manifest to answer questions about items, or analyze your current inventory.
@@ -87,7 +86,7 @@ export function ChatWindow() {
                                     <button
                                         key={chip}
                                         onClick={() => sendMessage(chip)}
-                                        className="text-xs text-left p-3 rounded bg-bg-tertiary border border-border-subtle hover:border-gold-primary/50 hover:bg-bg-secondary transition-colors"
+                                        className="text-xs text-left p-3 rounded bg-bg-tertiary border border-border-subtle hover:border-wd-primary-600/50 hover:bg-bg-secondary transition-colors"
                                     >
                                         {chip}
                                     </button>
@@ -122,12 +121,12 @@ export function ChatWindow() {
                         type="text"
                         placeholder="Ask about loadouts, builds, or item stats..."
                         onKeyDown={handleKeyDown}
-                        className="flex-1 bg-bg-tertiary border border-border-subtle rounded-full py-3 px-5 text-sm text-text-primary focus:outline-none focus:border-gold-primary/50 transition-colors placeholder:text-text-disabled shadow-inner"
+                        className="flex-1 bg-bg-tertiary border border-border-subtle rounded-full py-3 px-5 text-sm text-text-primary focus:outline-none focus:border-wd-primary-600/50 transition-colors placeholder:text-text-disabled shadow-inner"
                     />
                     <button
                         onClick={handleSend}
                         disabled={isLoading}
-                        className="p-3 bg-gold-primary hover:bg-gold-highlight text-black rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-gold-primary/10"
+                        className="p-3 bg-wd-primary-600 hover:bg-wd-primary-500 text-black rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-wd-primary-600/10"
                     >
                         <Send size={18} />
                     </button>

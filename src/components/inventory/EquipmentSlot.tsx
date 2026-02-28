@@ -46,7 +46,7 @@ export function EquipmentSlot({ item, category, bucketHash, onClick, compact = f
                 {/* 🖼️ Item Icon */}
                 <div className={cn(
                     "relative h-full w-full overflow-hidden rounded-sm border bg-[#1e293b]",
-                    isExotic ? "border-yellow-500" : isMasterwork ? "border-gold-primary" : "border-white/20"
+                    isExotic ? "border-yellow-500" : isMasterwork ? "border-wd-primary-600" : "border-white/20"
                 )}>
                     {/* Reverted to <img> to avoid constructor crash -> Now using Next Image properly */}
                     <Image
@@ -70,7 +70,7 @@ export function EquipmentSlot({ item, category, bucketHash, onClick, compact = f
 
                 {/* ✨ Masterwork Overlay */}
                 {isMasterwork && (
-                    <div className="absolute -inset-0.5 rounded-sm bg-gold-primary/30 blur-sm -z-10 group-hover:bg-gold-primary/50 transition-all" />
+                    <div className="absolute -inset-0.5 rounded-sm bg-wd-primary-600/30 blur-sm -z-10 group-hover:bg-wd-primary-600/50 transition-all" />
                 )}
             </div>
         </DraggableItem>

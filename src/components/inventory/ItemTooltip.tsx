@@ -77,7 +77,7 @@ export function ItemTooltip({ item, anchorEl, visible }: ItemTooltipProps) {
                         {item.typeName || (item.itemType === 3 ? "Weapon" : item.itemType === 2 ? "Armor" : "Item")}
                     </span>
                     {item.primaryStat && (
-                        <span className="text-xs font-mono text-gold-primary ml-auto">
+                        <span className="text-xs font-mono text-wd-primary-400 ml-auto">
                             ⚡ {item.primaryStat}
                         </span>
                     )}

@@ -51,7 +51,7 @@ export const useBuildStore = create<BuildState>((set, get) => ({
 
     setSubclassPlug: (socketIndex, plugHash, plugStats) => set((state) => {
         const newPlugs = { ...state.subclassPlugs, [socketIndex]: plugHash };
-        let newPlugStats = { ...state.subclassPlugStats };
+        const newPlugStats = { ...state.subclassPlugStats };
 
         if (plugHash && plugStats) {
             const normalized: Record<string, number> = {};

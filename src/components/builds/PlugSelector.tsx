@@ -58,7 +58,7 @@ export function PlugSelector({ isOpen, onClose, title, options, onSelect, classN
                                 <button
                                     key={opt.hash}
                                     onClick={() => { onSelect(opt.hash); onClose(); }}
-                                    className="flex items-start gap-3 p-3 rounded-md bg-bg-tertiary border border-transparent hover:border-gold-primary/50 hover:bg-bg-tertiary/80 transition-all text-left group"
+                                    className="flex items-start gap-3 p-3 rounded-md bg-bg-tertiary border border-transparent hover:border-wd-primary-600/50 hover:bg-bg-tertiary/80 transition-all text-left group"
                                 >
                                     {opt.icon && (
                                         <div className="relative w-10 h-10 shrink-0 bg-black/50 rounded-sm overflow-hidden">
@@ -72,7 +72,7 @@ export function PlugSelector({ isOpen, onClose, title, options, onSelect, classN
                                         </div>
                                     )}
                                     <div className="flex-1 min-w-0">
-                                        <div className="font-bold text-sm text-text-primary group-hover:text-gold-primary transition-colors">{opt.name}</div>
+                                        <div className="font-bold text-sm text-text-primary group-hover:text-wd-primary-400 transition-colors">{opt.name}</div>
                                         <div className="text-xs text-text-secondary line-clamp-2 mt-1">{opt.description}</div>
                                         {opt.statBonuses && (
                                             <div className="flex gap-2 mt-2 flex-wrap">

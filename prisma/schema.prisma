@@ -43,7 +43,7 @@ model LoadoutItem {
   id          String  @id @default(cuid())
   loadoutId   String
   loadout     Loadout @relation(fields: [loadoutId], references: [id], onDelete: Cascade)
-  itemHash    Int     // DestinyInventoryItemDefinition hash
+  itemHash    String     // DestinyInventoryItemDefinition hash
   instanceId  String? // Item instance ID (for equipped items)
   bucketHash  Int     // Equipment slot bucket hash
   socketOverrides String? // JSON string of socket plug hashes
@@ -55,7 +55,7 @@ model ItemAnnotation {
   id          String   @id @default(cuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  itemHash    Int
+  itemHash    String
   instanceId  String?  // For instanced items like weapons/armor. null for consumables?
   tag         String?  // "favorite", "junk", "keep", "archive"
   notes       String?

@@ -75,24 +75,25 @@ export default function AIPage() {
 
     return (
         <div className="flex flex-col h-[calc(100vh-6rem)] animate-fade-in max-w-5xl mx-auto w-full">
-            {/* Header */}
-            <header className="flex items-center justify-between py-4 px-6 border-b border-border-subtle bg-bg-secondary/50 backdrop-blur-md rounded-t-xl mx-4 mt-4">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gold-primary/10 rounded-lg text-gold-primary">
+            {/* Header — WowDash Card Header */}
+            <header className="flex items-center justify-between py-4 px-6 border-b border-border-subtle bg-bg-secondary rounded-t-2xl mx-4 mt-4 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-wd-lilac/8 via-wd-primary-600/5 to-transparent pointer-events-none" />
+                <div className="flex items-center gap-3 relative z-10">
+                    <div className="w-10 h-10 rounded-xl bg-wd-lilac/20 flex items-center justify-center text-wd-lilac shadow-[0_0_15px_rgba(139,92,246,0.2)]">
                         <Sparkles size={20} />
                     </div>
                     <div>
-                        <h1 className="text-lg font-bold text-text-primary">NEXA Advisor</h1>
+                        <h1 className="text-lg font-black text-text-primary">NEXA Advisor</h1>
                         <div className="flex items-center gap-2">
-                            <span className="h-2 w-2 rounded-full bg-status-success shadow-[0_0_4px_theme(colors.status.success)]"></span>
-                            <span className="text-xs text-text-secondary">System Online</span>
+                            <span className="h-2 w-2 rounded-full bg-wd-success shadow-[0_0_6px_var(--color-wd-success)] animate-pulse"></span>
+                            <span className="text-[10px] text-text-tertiary uppercase tracking-wider font-bold">System Online • AI Powered</span>
                         </div>
                     </div>
                 </div>
             </header>
 
             {/* Chat Area */}
-            <div className="flex-1 flex flex-col min-h-0 bg-bg-primary/50 relative overflow-hidden mx-4 mb-4 rounded-b-xl border border-t-0 border-border-subtle">
+            <div className="flex-1 flex flex-col min-h-0 bg-bg-primary/50 relative overflow-hidden mx-4 mb-4 rounded-b-2xl border border-t-0 border-border-subtle">
                 {/* Messages */}
                 <div
                     ref={scrollRef}
@@ -104,10 +105,10 @@ export default function AIPage() {
                             msg.role === "user" ? "ml-auto flex-row-reverse" : "mr-auto"
                         )}>
                             <div className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center shrink-0 border shadow-sm",
+                                "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
                                 msg.role === "assistant"
-                                    ? "bg-bg-tertiary border-border-medium text-gold-primary"
-                                    : "bg-bg-tertiary border-border-medium text-text-secondary"
+                                    ? "bg-wd-lilac/15 border border-wd-lilac/20 text-wd-lilac"
+                                    : "bg-wd-primary-600/15 border border-wd-primary-600/20 text-wd-primary-400"
                             )}>
                                 {msg.role === "assistant" ? <Bot size={16} /> : <User size={16} />}
                             </div>
@@ -122,7 +123,7 @@ export default function AIPage() {
                                 <div className={cn(
                                     "p-4 rounded-2xl text-sm leading-relaxed shadow-sm",
                                     msg.role === "user"
-                                        ? "bg-gold-primary text-bg-primary font-medium rounded-tr-sm"
+                                        ? "bg-wd-primary-600 text-white font-medium rounded-tr-sm"
                                         : "bg-bg-secondary border border-border-subtle text-text-primary rounded-tl-sm"
                                 )}>
                                     {msg.content}
@@ -132,15 +133,16 @@ export default function AIPage() {
                     ))}
 
                     {loading && (
-                        <div className="flex gap-4 max-w-3xl mr-auto animate-pulse">
-                            <div className="h-8 w-8 rounded-full bg-bg-tertiary border border-border-medium text-gold-primary flex items-center justify-center shrink-0">
+                        <div className="flex gap-4 max-w-3xl mr-auto wd-slide-up">
+                            <div className="h-9 w-9 rounded-xl bg-wd-lilac/15 border border-wd-lilac/20 text-wd-lilac flex items-center justify-center shrink-0">
                                 <Bot size={16} />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <span className="text-[10px] uppercase font-bold text-text-tertiary tracking-wider px-1">NEXA</span>
-                                <div className="p-4 rounded-2xl bg-bg-secondary border border-border-subtle rounded-tl-sm w-64">
-                                    <div className="h-2 w-16 bg-text-tertiary/20 rounded-full mb-2 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                    <div className="h-2 w-12 bg-text-tertiary/20 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <div className="p-4 rounded-2xl bg-bg-secondary border border-border-subtle rounded-tl-sm w-72">
+                                    <div className="h-2 w-40 wd-shimmer rounded-full mb-2.5" />
+                                    <div className="h-2 w-28 wd-shimmer rounded-full mb-2.5" />
+                                    <div className="h-2 w-20 wd-shimmer rounded-full" />
                                 </div>
                             </div>
                         </div>
@@ -156,7 +158,7 @@ export default function AIPage() {
                                 <button
                                     key={q}
                                     onClick={() => handleSend(q)}
-                                    className="px-3 py-1.5 rounded-full bg-bg-tertiary border border-border-medium text-xs text-text-secondary hover:text-gold-primary hover:border-gold-primary/30 transition-colors whitespace-nowrap"
+                                    className="px-3 py-1.5 rounded-full bg-bg-tertiary border border-border-medium text-xs text-text-secondary hover:text-wd-primary-400 hover:border-wd-primary-600/30 transition-colors whitespace-nowrap"
                                 >
                                     {q}
                                 </button>
@@ -173,14 +175,14 @@ export default function AIPage() {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 placeholder="Ask about loadouts, builds, or item stats..."
-                                className="h-12 bg-bg-primary border-border-medium focus:border-gold-primary/50 focus:ring-1 focus:ring-gold-primary/50 pl-4 rounded-xl shadow-inner"
+                                className="h-12 bg-bg-primary border-border-medium focus:border-wd-primary-600/50 focus:ring-1 focus:ring-wd-primary-600/50 pl-4 rounded-xl shadow-inner"
                                 autoFocus
                             />
                         </div>
                         <Button
                             type="submit"
                             disabled={loading || !input.trim()}
-                            className="h-12 w-12 rounded-xl p-0 bg-gold-primary text-bg-primary hover:bg-gold-primary/90 shadow-lg shadow-gold-primary/20"
+                            className="h-12 w-12 rounded-xl p-0 bg-wd-primary-600 text-white hover:bg-wd-primary-600/90 shadow-lg shadow-wd-primary-600/20"
                         >
                             <Send size={20} />
                         </Button>
@@ -188,7 +190,7 @@ export default function AIPage() {
 
                     <div className="text-center mt-3">
                         <p className="text-[10px] text-text-tertiary flex items-center justify-center gap-1.5">
-                            <Sparkles size={10} className="text-gold-primary" />
+                            <Sparkles size={10} className="text-wd-primary-400" />
                             AI responses may vary. Always verify in game.
                         </p>
                     </div>

@@ -1,0 +1,5 @@
+HELMET: /common/destiny2_content/icons/1cb2285f74ece98b03e170a3f8d9abdc.jpg
+ARMS: /common/destiny2_content/icons/565dae9912c5f29c3912f8043647f1bd.jpg
+CHEST: /common/destiny2_content/icons/652d751634deef137f0da280dd92519c.jpg
+LEGS: /common/destiny2_content/icons/cfdce436908a969a280a99ed7e759544.jpg
+CLASS: /common/destiny2_content/icons/43e20b53463d791dc2d201832670c0ff.jpg

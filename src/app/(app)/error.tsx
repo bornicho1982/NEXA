@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@/components/ui/components";
 import { ShieldAlert, RefreshCw, Terminal } from "lucide-react";
 
 interface ErrorProps {
@@ -9,62 +8,63 @@ interface ErrorProps {
     reset: () => void;
 }
 
-export default function ErrorBoundary({ error, reset }: ErrorProps) {
+export default function ErrorPage({ error, reset }: ErrorProps) {
     useEffect(() => {
         console.error("[App Error]", error);
     }, [error]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[70vh] text-center p-6 space-y-8 animate-enter">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] text-center p-6 space-y-8 animate-fade-in">
+            {/* Icon Badge */}
             <div className="relative">
-                <div className="absolute inset-0 bg-vanguard-red/20 blur-2xl rounded-full animate-pulse" />
-                <div className="relative p-6 bg-vanguard-red/10 border border-vanguard-red/40 angled-corners text-vanguard-red">
-                    <ShieldAlert size={48} />
+                <div className="absolute inset-0 bg-wd-danger/20 blur-3xl rounded-full animate-pulse" />
+                <div className="relative w-20 h-20 rounded-2xl bg-wd-danger/15 border border-wd-danger/30 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.2)]">
+                    <ShieldAlert size={40} className="text-wd-danger" />
                 </div>
             </div>
 
-            <div className="space-y-4">
+            {/* Status */}
+            <div className="space-y-3">
                 <div className="flex items-center justify-center gap-2">
-                    <Terminal size={12} className="text-vanguard-red" />
-                    <span className="text-[10px] font-black tracking-[0.3em] text-vanguard-red uppercase italic">System Fault Detected</span>
+                    <Terminal size={12} className="text-wd-danger" />
+                    <span className="text-[10px] font-black tracking-[0.3em] text-wd-danger uppercase">System Fault Detected</span>
                 </div>
-                <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">Comms_Interrupted</h2>
-                <p className="text-sm text-gray-500 max-w-sm mx-auto font-medium">
+                <h2 className="text-4xl font-black text-text-primary uppercase tracking-tighter">COMMS_INTERRUPTED</h2>
+                <p className="text-sm text-text-tertiary max-w-sm mx-auto font-medium leading-relaxed">
                     Critical failure in the neural link. All synchronization processes have been suspended.
                 </p>
             </div>
 
-            {/* Diagnostic Output */}
+            {/* Diagnostic */}
             {process.env.NODE_ENV === "development" && (
-                <div className="w-full max-w-2xl bg-black/40 border border-white/5 p-6 angled-corners text-left space-y-4">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                        <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">Diagnostic_Log_Feed</span>
-                        <span className="text-[8px] font-mono text-vanguard-red uppercase font-bold">DIGEST: {error.digest || "NULL"}</span>
+                <div className="w-full max-w-2xl wd-card p-6 text-left space-y-4">
+                    <div className="flex items-center justify-between border-b border-border-subtle pb-2">
+                        <span className="text-[10px] font-black text-text-tertiary uppercase tracking-widest">Diagnostic Link Feed</span>
+                        <span className="text-[10px] font-mono text-wd-danger uppercase font-bold">DIGEST: {error.digest || "NULL"}</span>
                     </div>
-                    <div className="text-[10px] font-mono text-vanguard-red/80 break-all leading-relaxed max-h-40 overflow-y-auto custom-scrollbar">
-                        {error.message}
+                    <div className="text-xs font-mono text-wd-danger/80 break-all leading-relaxed max-h-40 overflow-y-auto custom-scrollbar">
+                        Error: {error.message}
                         {error.stack && (
-                            <pre className="mt-4 opacity-40 whitespace-pre-wrap">{error.stack}</pre>
+                            <pre className="mt-4 opacity-40 whitespace-pre-wrap text-[10px]">{error.stack}</pre>
                         )}
                     </div>
                 </div>
             )}
 
-            <div className="flex flex-col sm:flex-row gap-4">
-                <Button
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-3">
+                <button
                     onClick={() => reset()}
-                    className="h-12 px-10"
+                    className="px-8 py-3 rounded-xl bg-wd-primary-600 text-white font-bold text-sm hover:bg-wd-primary-700 transition-colors shadow-lg shadow-wd-primary-600/25 flex items-center justify-center gap-2 uppercase tracking-wider"
                 >
-                    <RefreshCw size={18} className="mr-2" />
-                    RETRY_HANDSHAKE
-                </Button>
-                <Button
-                    variant="ghost"
+                    <RefreshCw size={14} /> Retry Handshake
+                </button>
+                <button
                     onClick={() => window.location.href = "/dashboard"}
-                    className="h-12 px-10 text-[10px]"
+                    className="px-8 py-3 rounded-xl border border-border-subtle text-text-secondary font-semibold text-sm hover:bg-white/5 hover:text-text-primary transition-colors uppercase tracking-wider"
                 >
-                    ABORT_TO_COMMAND
-                </Button>
+                    Abort to Command
+                </button>
             </div>
         </div>
     );

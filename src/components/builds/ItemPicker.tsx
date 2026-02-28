@@ -50,13 +50,13 @@ export function ItemPicker({ className }: ItemPickerProps) {
         <div className={cn("flex flex-col h-full bg-bg-secondary border-l border-border-subtle", className)}>
             <div className="p-4 border-b border-border-subtle space-y-3">
                 <h3 className="font-bold text-text-primary flex items-center gap-2">
-                    <Filter size={16} className="text-gold-primary" />
+                    <Filter size={16} className="text-wd-primary-400" />
                     Vault Storage
                 </h3>
                 <div className="relative">
                     <Search className="absolute left-2.5 top-2.5 text-text-tertiary" size={14} />
                     <input
-                        className="w-full bg-bg-tertiary border border-border-medium rounded-md py-2 pl-8 pr-3 text-xs text-text-primary focus:border-gold-primary outline-none transition-colors"
+                        className="w-full bg-bg-tertiary border border-border-medium rounded-md py-2 pl-8 pr-3 text-xs text-text-primary focus:border-wd-primary-600 outline-none transition-colors"
                         placeholder="Search gear..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}

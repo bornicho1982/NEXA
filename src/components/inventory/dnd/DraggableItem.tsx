@@ -1,6 +1,6 @@
 "use client";
 
-import { ItemCard, ItemCardProps } from "../ItemCard";
+import { ItemCardProps } from "../ItemCard";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 interface DraggableItemProps {
     id: string;
     item: ItemCardProps['item'];
-    data: any;
+    data: Record<string, unknown>;
     children: React.ReactNode;
     disabled?: boolean;
     className?: string;

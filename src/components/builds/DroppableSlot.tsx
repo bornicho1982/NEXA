@@ -27,7 +27,7 @@ export function DroppableSlot({ id, label, item, placeholderIcon, className, onR
             ref={setNodeRef}
             className={cn(
                 "relative aspect-square rounded-sm border-2 transition-all flex items-center justify-center p-0.5",
-                isOver ? "border-gold-primary bg-gold-primary/10 shadow-[0_0_15px_rgba(234,179,8,0.3)]" : "border-border-medium bg-bg-tertiary/50",
+                isOver ? "border-wd-primary-600 bg-wd-primary-600/10 shadow-[0_0_15px_rgba(234,179,8,0.3)]" : "border-border-medium bg-bg-tertiary/50",
                 className
             )}
         >

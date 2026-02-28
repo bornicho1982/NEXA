@@ -32,6 +32,7 @@ export function VirtualGrid({ items, itemHeight, minItemWidth, gap = 8, classNam
     const columns = Math.max(1, Math.floor((containerWidth + gap) / (minItemWidth + gap)));
     const rows = Math.ceil(items.length / columns);
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const rowVirtualizer = useVirtualizer({
         count: rows,
         getScrollElement: () => parentRef.current,

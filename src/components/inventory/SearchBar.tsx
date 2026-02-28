@@ -34,7 +34,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
 
         const lastWord = value.split(" ").pop()?.toLowerCase() || "";
         if (lastWord.includes(":") || lastWord.startsWith("is") || lastWord.startsWith("tag")) {
-             return COMMANDS.filter(c => c.cmd.startsWith(lastWord));
+            return COMMANDS.filter(c => c.cmd.startsWith(lastWord));
         } else {
             return [];
         }
@@ -49,7 +49,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
 
     return (
         <div ref={wrapperRef} className="relative group w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-gold-primary transition-colors" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-tertiary group-focus-within:text-wd-primary-400 transition-colors" />
             <input
                 type="text"
                 placeholder="Search (e.g. is:weapon Hand Cannon)"
@@ -57,18 +57,18 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
                 onChange={(e) => onChange(e.target.value)}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setTimeout(() => setFocused(false), 200)}
-                className="h-10 w-full bg-white/5 border border-white/10 rounded-lg pl-9 text-sm text-white focus:border-gold-primary/50 focus:outline-none transition-all"
+                className="h-10 w-full bg-bg-primary border border-border-subtle rounded-lg pl-9 text-sm text-text-primary focus:border-wd-primary-600/50 focus:ring-1 focus:ring-wd-primary-600/25 focus:outline-none transition-all"
             />
 
             {focused && suggestions.length > 0 && (
-                <div className="absolute top-full mt-2 left-0 w-full bg-[#0f141e] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute top-full mt-2 left-0 w-full bg-bg-secondary border border-border-subtle rounded-lg shadow-elevated z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
                     {suggestions.map((s) => (
                         <button
                             key={s.cmd}
                             onClick={() => handleSelect(s.cmd)}
-                            className="w-full text-left px-4 py-2 hover:bg-white/5 text-xs flex justify-between items-center group/item"
+                            className="w-full text-left px-4 py-2 hover:bg-wd-primary-600/10 text-xs flex justify-between items-center group/item"
                         >
-                            <span className="font-mono text-gold-primary">{s.cmd}</span>
+                            <span className="font-mono text-wd-primary-400">{s.cmd}</span>
                             <span className="text-text-tertiary group-hover/item:text-white transition-colors">{s.desc}</span>
                         </button>
                     ))}

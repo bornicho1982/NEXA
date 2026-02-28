@@ -43,7 +43,7 @@ export function ArtificeSelector({ bucketHash, className }: ArtificeSelectorProp
                 className="flex items-center gap-2 px-2 py-1 bg-bg-tertiary border border-border-subtle rounded text-xs hover:bg-bg-secondary transition-colors w-full justify-between"
             >
                 <div className="flex items-center gap-2">
-                    <span className="text-gold-primary text-[10px] uppercase font-bold tracking-wider">Artifice</span>
+                    <span className="text-wd-primary-400 text-[10px] uppercase font-bold tracking-wider">Artifice</span>
                     {selectedOption ? (
                         <span className="flex items-center gap-1 text-text-primary">
                             <span>{selectedOption.icon}</span>
@@ -71,7 +71,7 @@ export function ArtificeSelector({ bucketHash, className }: ArtificeSelectorProp
                                 <span>{option.icon}</span>
                                 <span>{option.name} (+3)</span>
                             </span>
-                            {selectedHash === option.hash && <Check size={12} className="text-gold-primary" />}
+                            {selectedHash === option.hash && <Check size={12} className="text-wd-primary-400" />}
                         </button>
                     ))}
                     <button

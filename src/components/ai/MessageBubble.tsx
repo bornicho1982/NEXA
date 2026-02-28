@@ -24,23 +24,23 @@ export function MessageBubble({ role, content }: MessageBubbleProps) {
         >
             <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center shrink-0 border",
-                isAi ? "bg-bg-tertiary border-gold-primary/20 text-gold-primary" : "bg-bg-secondary border-border-subtle text-text-secondary"
+                isAi ? "bg-bg-tertiary border-wd-primary-600/20 text-wd-primary-400" : "bg-bg-secondary border-border-subtle text-text-secondary"
             )}>
                 {isAi ? <Bot size={16} /> : <User size={16} />}
             </div>
 
             <div className={cn(
                 "p-3 rounded-2xl text-sm leading-relaxed",
-                isAi ? "bg-bg-tertiary/50 border border-border-subtle text-text-primary rounded-tl-sm" : "bg-gold-primary/10 border border-gold-primary/20 text-text-primary rounded-tr-sm"
+                isAi ? "bg-bg-tertiary/50 border border-border-subtle text-text-primary rounded-tl-sm" : "bg-wd-primary-600/10 border border-wd-primary-600/20 text-text-primary rounded-tr-sm"
             )}>
                 {isAi ? (
                     <div className="prose prose-invert prose-sm max-w-none">
                         <ReactMarkdown
                             components={{
-                                p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
-                                ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-2" {...props} />,
-                                li: ({ node, ...props }) => <li className="mb-1" {...props} />,
-                                code: ({ node, ...props }) => <code className="bg-black/30 px-1 py-0.5 rounded text-xs font-mono text-gold-highlight" {...props} />
+                                p: ({ ...props }) => <p className="mb-2 last:mb-0" {...props} />,
+                                ul: ({ ...props }) => <ul className="list-disc pl-4 mb-2" {...props} />,
+                                li: ({ ...props }) => <li className="mb-1" {...props} />,
+                                code: ({ ...props }) => <code className="bg-black/30 px-1 py-0.5 rounded text-xs font-mono text-wd-warning" {...props} />
                             }}
                         >
                             {content}

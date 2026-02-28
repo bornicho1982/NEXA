@@ -16,6 +16,7 @@
     "@headlessui/react": "^2.2.9",
     "@prisma/client": "^6.19.2",
     "@tanstack/react-virtual": "^3.13.18",
+    "@types/three": "^0.183.1",
     "clsx": "^2.1.1",
     "content-security-policy-builder": "^2.3.0",
     "framer-motion": "^12.34.0",
@@ -29,6 +30,7 @@
     "sonner": "^2.0.7",
     "swr": "^2.4.0",
     "tailwind-merge": "^3.4.1",
+    "three": "^0.183.1",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

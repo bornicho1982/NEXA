@@ -24,7 +24,7 @@ export function DraggableItem({ id, item, disabled }: DraggableItemProps) {
 
     return (
         <div ref={setNodeRef} style={style} {...listeners} {...attributes} className={cn("touch-none", isDragging ? "opacity-50" : "")}>
-            <ItemCard item={item} className={isDragging ? "ring-2 ring-gold-primary shadow-2xl" : ""} />
+            <ItemCard item={item} className={isDragging ? "ring-2 ring-wd-primary-600 shadow-2xl" : ""} />
         </div>
     );
 }

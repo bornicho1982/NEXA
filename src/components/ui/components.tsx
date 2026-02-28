@@ -12,7 +12,7 @@ export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
             <div
                 ref={ref}
                 className={cn(
-                    "nexa-card p-6 bg-bg-secondary text-text-primary",
+                    "wd-card p-6 bg-bg-secondary text-text-primary",
                     className
                 )}
                 {...props}
@@ -34,7 +34,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
                     type={type}
                     className={cn(
                         "flex h-11 w-full rounded-md border border-border-medium bg-bg-tertiary/50 px-4 py-2 text-sm text-text-primary transition-all placeholder:text-text-tertiary",
-                        "focus:border-gold-primary focus:ring-1 focus:ring-gold-primary/50 focus:bg-bg-tertiary focus:outline-none",
+                        "focus:border-wd-primary-600 focus:ring-1 focus:ring-wd-primary-600/50 focus:bg-bg-tertiary focus:outline-none",
                         "disabled:cursor-not-allowed disabled:opacity-50",
                         className
                     )}
@@ -58,10 +58,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variants = {
-    default: "bg-gold-primary text-bg-primary font-bold hover:bg-gold-primary/90 shadow-md shadow-gold-primary/20",
+    default: "bg-wd-primary-600 text-white font-bold hover:bg-wd-primary-600/90 shadow-md shadow-wd-primary-600/20",
     secondary: "bg-bg-tertiary text-white font-medium hover:bg-bg-tertiary/80 border border-border-medium",
     ghost: "bg-transparent text-text-secondary hover:text-white hover:bg-white/5",
-    destructive: "bg-status-error/10 text-status-error border border-status-error/20 hover:bg-status-error/20",
+    destructive: "bg-wd-danger/10 text-wd-danger border border-wd-danger/20 hover:bg-wd-danger/20",
     outline: "border border-border-medium bg-transparent text-text-secondary hover:text-white hover:border-white/20",
 };
 

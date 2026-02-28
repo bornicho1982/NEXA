@@ -40,11 +40,30 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-certificates
-
 # manifest cache
 /data/
 
 # prisma
 *.db
 *.db-journal
+
+# =========================================
+# --- REGLAS NUEVAS (Morralla y pesados) ---
+# =========================================
+
+# Carpetas pesadas o que no son del código principal
+/Boveda_Destiny_Total/
+/Main-file_WowDash_Bundle/
+/.agent/
+
+# Imágenes de auditoría y tests sueltas en la raíz
+audit-*.png
+test-*.png
+
+# Logs del servidor y outputs de compilación locales
+*.log
+build_*.txt
+lint-output.txt
+
+# Certificados locales
+/certificates/

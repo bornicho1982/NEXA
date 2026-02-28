@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 import type { InventoryCharacter } from "@/lib/inventory/service";
 import Image from "next/image";
 import { DroppableZone } from "./dnd/DroppableZone";
+import { Menu } from "@headlessui/react";
+import { MoreVertical, ShieldMinus, Sword, PackageOpen } from "lucide-react";
+import { useInventoryStore } from "@/lib/store/inventory";
 
 interface CharacterSelectorProps {
     characters: InventoryCharacter[];
@@ -13,6 +16,7 @@ interface CharacterSelectorProps {
 
 export function CharacterSelector({ characters, selectedId, onSelect }: CharacterSelectorProps) {
     const BUNGIE_ROOT = "https://www.bungie.net";
+    const { stripArmor, stripWeapons, collectPostmaster } = useInventoryStore();
 
     return (
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
@@ -27,15 +31,15 @@ export function CharacterSelector({ characters, selectedId, onSelect }: Characte
                         key={char.characterId}
                         id={char.characterId}
                         data={{ type: "character", characterId: char.characterId }}
-                        className="rounded-lg"
+                        className="rounded-lg relative group/char flex-shrink-0"
                     >
                         <button
                             onClick={() => onSelect(char.characterId)}
                             className={cn(
-                                "relative h-12 w-48 min-w-[180px] rounded-lg overflow-hidden border transition-all group w-full",
+                                "relative h-12 w-48 min-w-[180px] rounded-lg overflow-hidden border transition-all w-full",
                                 isSelected
-                                    ? "border-gold-primary ring-1 ring-gold-primary/50 shadow-lg shadow-gold-primary/10"
-                                    : "border-white/10 hover:border-white/30 opacity-70 hover:opacity-100"
+                                    ? "border-wd-primary-600 ring-1 ring-wd-primary-600/50 shadow-lg shadow-wd-primary-600/10"
+                                    : "border-border-subtle hover:border-border-medium opacity-70 hover:opacity-100"
                             )}
                         >
                             {/* Background Emblem */}
@@ -44,7 +48,7 @@ export function CharacterSelector({ characters, selectedId, onSelect }: Characte
                                     src={`${BUNGIE_ROOT}${char.emblemBackgroundPath}`}
                                     alt="Emblem"
                                     fill
-                                    className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                    className="object-cover opacity-80 transition-opacity"
                                 />
                             )}
 
@@ -64,16 +68,64 @@ export function CharacterSelector({ characters, selectedId, onSelect }: Characte
                                         {char.raceType === 0 ? "Human" : char.raceType === 1 ? "Awoken" : "Exo"} • {char.genderType === 0 ? "Male" : "Female"}
                                     </div>
                                 </div>
-                                <div className="text-xl font-bold text-gold-primary drop-shadow-md font-mono-stat">
+                                <div className="text-xl font-bold text-wd-warning drop-shadow-md font-mono-stat mr-2">
                                     {char.light}
                                 </div>
                             </div>
 
                             {/* Active Indicator Bar */}
                             {isSelected && (
-                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold-primary shadow-[0_0_8px_#f97316]" />
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-wd-primary-600 shadow-[0_0_8px_rgba(72,127,255,0.5)]" />
                             )}
                         </button>
+
+                        {/* Dropdown Menu for Mass Actions */}
+                        <Menu>
+                            <Menu.Button
+                                className="absolute top-1.5 right-1.5 z-20 p-1 rounded bg-black/60 hover:bg-black text-white/50 hover:text-white transition-colors opacity-0 group-hover/char:opacity-100 outline-none backdrop-blur-sm"
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                            >
+                                <MoreVertical size={16} />
+                            </Menu.Button>
+                            <Menu.Items
+                                transition
+                                anchor="bottom end"
+                                className="w-48 origin-top-right rounded-lg bg-bg-secondary/95 backdrop-blur-md border border-border-subtle shadow-xl shadow-black/50 focus:outline-none overflow-hidden divide-y divide-border-subtle z-50 transition duration-100 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
+                            >
+                                <div className="py-1">
+                                    <Menu.Item>
+                                        <button
+                                            onClick={(e: React.MouseEvent) => { e.stopPropagation(); collectPostmaster(char.characterId); }}
+                                            className="group flex w-full items-center px-4 py-2.5 text-sm text-left transition-colors data-[focus]:bg-wd-primary-600/15 data-[focus]:text-wd-primary-400 text-text-secondary hover:text-text-primary"
+                                        >
+                                            <PackageOpen size={14} className="mr-3 shrink-0" />
+                                            Recoger Postmaster
+                                        </button>
+                                    </Menu.Item>
+                                </div>
+                                <div className="py-1">
+                                    <Menu.Item>
+                                        <button
+                                            onClick={(e: React.MouseEvent) => { e.stopPropagation(); stripArmor(char.characterId); }}
+                                            className="group flex w-full items-center px-4 py-2.5 text-sm text-left transition-colors data-[focus]:bg-white/5 text-text-secondary hover:text-text-primary"
+                                        >
+                                            <ShieldMinus size={14} className="mr-3 shrink-0" />
+                                            Quitar Armaduras
+                                        </button>
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                        <button
+                                            onClick={(e: React.MouseEvent) => { e.stopPropagation(); stripWeapons(char.characterId); }}
+                                            className="group flex w-full items-center px-4 py-2.5 text-sm text-left transition-colors data-[focus]:bg-white/5 text-text-secondary hover:text-text-primary"
+                                        >
+                                            <Sword size={14} className="mr-3 shrink-0" />
+                                            Limpiar Armas
+                                        </button>
+                                    </Menu.Item>
+                                </div>
+                            </Menu.Items>
+                        </Menu>
+
                     </DroppableZone>
                 );
             })}

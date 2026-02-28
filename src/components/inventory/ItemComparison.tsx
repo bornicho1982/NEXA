@@ -60,7 +60,7 @@ export function ItemComparison({ item1, item2, className }: ItemComparisonProps)
                             <div className="flex items-center gap-2 text-xs">
                                 <span className="text-text-secondary">{item.type}</span>
                                 {item.primaryStat && (
-                                    <span className="text-gold-primary font-mono-stat font-bold">
+                                    <span className="text-wd-primary-400 font-mono-stat font-bold">
                                         {item.primaryStat}
                                     </span>
                                 )}
