@@ -13,10 +13,18 @@ export class TGXLoader extends THREE.Loader {
      * Loads a TGX container file and returns its parsed contents.
      */
     async load(url: string): Promise<any> {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Failed to load TGX: ${url}`);
-        const buffer = await response.arrayBuffer();
-        return this.parse(buffer);
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.warn(`[TGXLoader] Failed to load TGX: ${url} (Status: ${response.status})`);
+                return [];
+            }
+            const buffer = await response.arrayBuffer();
+            return this.parse(buffer);
+        } catch (error) {
+            console.error(`[TGXLoader] Fetch error for TGX: ${url}`, error);
+            return [];
+        }
     }
 
     /**
@@ -80,16 +88,23 @@ export class TGXLoader extends THREE.Loader {
         // Vertex Buffer (Interleaved)
         // Position is typically at the start of the stride
         const stride = metadata.vertex_stride_0 || 12; // Default 12 for 3 floats
-        const floatData = new Float32Array(vertexBuffer);
 
-        // We need to carefully map attributes based on the metadata
-        // For the prototype, we assume common offsets
-        geometry.setAttribute("position", new THREE.BufferAttribute(floatData, 3, true));
+        try {
+            const floatData = new Float32Array(vertexBuffer);
 
-        // If UVs exist in metadata (typically vertex_stride_1)
-        // geometry.setAttribute("uv", ...);
+            // We need to carefully map attributes based on the metadata
+            // For the prototype, we assume common offsets (contiguous positions)
+            geometry.setAttribute("position", new THREE.BufferAttribute(floatData, 3, true));
 
-        geometry.computeVertexNormals();
+            // If UVs exist in metadata (typically vertex_stride_1)
+            // geometry.setAttribute("uv", ...);
+
+            geometry.computeVertexNormals();
+        } catch (error) {
+            console.error("[TGXLoader] Error creating geometry buffers", error);
+            // Return empty geometry if parsing fails
+        }
+
         return geometry;
     }
 }

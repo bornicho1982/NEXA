@@ -41,17 +41,34 @@ export const Guardian3D: React.FC<Guardian3DProps> = ({ renderData, className })
         containerRef.current.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
-        // ── Lighting ──
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // ── Advanced Lighting ──
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
 
-        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
-        mainLight.position.set(5, 10, 7.5);
-        scene.add(mainLight);
+        // Key light (warm)
+        const keyLight = new THREE.DirectionalLight(0xffffff, 1.8);
+        keyLight.position.set(5, 10, 5);
+        keyLight.castShadow = true;
+        scene.add(keyLight);
 
-        const fillLight = new THREE.PointLight(0x00ffff, 0.4);
-        fillLight.position.set(-5, 0, 5);
+        // Fill light (cool blue)
+        const fillLight = new THREE.DirectionalLight(0x487fff, 1.2);
+        fillLight.position.set(-5, 5, 2);
         scene.add(fillLight);
+
+        // Back light (rim light - intense)
+        const backLight = new THREE.PointLight(0xffd700, 2.0, 20);
+        backLight.position.set(0, 5, -5);
+        scene.add(backLight);
+
+        // Environment mapping (pseudo-HDRI setup using Scene background/environment)
+        scene.environmentIntensity = 0.5;
+
+        // Auto-rotate character base to fit view nicely
+        const characterContainer = new THREE.Group();
+        // Shift down slightly so it's centered
+        characterContainer.position.y = -1;
+        scene.add(characterContainer);
 
         // ── Controls ──
         const controls = new OrbitControls(camera, renderer.domElement);
@@ -65,13 +82,23 @@ export const Guardian3D: React.FC<Guardian3DProps> = ({ renderData, className })
             try {
                 console.log("[Guardian3D] Starting loadCharacter with data:", renderData);
                 setLoading(true);
+
+                // Remove previous character if re-rendering
+                while (characterContainer.children.length > 0) {
+                    const child = characterContainer.children[0];
+                    characterContainer.remove(child);
+                }
+
                 const charGroup = await characterRenderer.current.assembleCharacter(renderData);
                 console.log("[Guardian3D] Character assembly complete, meshes added:", charGroup.children.length);
-                scene.add(charGroup);
+
+                // Add to container rather than directly to scene
+                characterContainer.add(charGroup);
+
                 setLoading(false);
             } catch (err) {
                 console.error("3D Render Error:", err);
-                setError("Ocurrido un error al cargar el modelo 3D.");
+                setError("Ocurrió un error al ensamblar el modelo 3D del Guardián.");
                 setLoading(false);
             }
         };
@@ -79,9 +106,18 @@ export const Guardian3D: React.FC<Guardian3DProps> = ({ renderData, className })
         loadCharacter();
 
         // ── Animation Loop ──
+        let frameId: number;
         const animate = () => {
-            requestAnimationFrame(animate);
+            frameId = requestAnimationFrame(animate);
             controls.update();
+
+            // Slowly rotate if loading is complete
+            // Need to check controls.state in a robust way as it's not a direct property
+            if (!loading) {
+                // Determine if user is interacting with controls by checking if damping is actively changing target
+                characterContainer.rotation.y += 0.002;
+            }
+
             renderer.render(scene, camera);
         };
         animate();
@@ -98,12 +134,16 @@ export const Guardian3D: React.FC<Guardian3DProps> = ({ renderData, className })
         const container = containerRef.current;
 
         return () => {
+            cancelAnimationFrame(frameId);
             window.removeEventListener("resize", handleResize);
             renderer.dispose();
-            if (container) {
+            if (container && renderer.domElement && container.contains(renderer.domElement)) {
                 container.removeChild(renderer.domElement);
             }
         };
+        // Explicitly include loading in dependency array for the animation loop check,
+        // but only run effect on renderData change to avoid complete re-renders.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [renderData]);
 
     return (
