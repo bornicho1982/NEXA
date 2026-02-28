@@ -86,20 +86,44 @@ export class TGXLoader extends THREE.Loader {
         geometry.setIndex(new THREE.BufferAttribute(indexData, 1));
 
         // Vertex Buffer (Interleaved)
-        // Position is typically at the start of the stride
-        const stride = metadata.vertex_stride_0 || 12; // Default 12 for 3 floats
+        // Position is typically at the start of the stride (first 3 floats = 12 bytes)
+        // Bungie typically uses a stride of 32, 36, 48, or 64 bytes for their vertex buffers.
+        // If metadata is missing or we don't have the exact stride, we'll try to infer it.
+        // In most tgx files, vertex data has an implicit structure, often 32 bytes total.
+        // Positions (12), Normals (12), UVs (8)
+        let strideBytes = metadata.vertex_stride_0 || 32;
+
+        // Safety check: Ensure the stride evenly divides the buffer
+        // If it doesn't, try other common strides (like 48 or 64)
+        if (vertexBuffer.byteLength % strideBytes !== 0) {
+            if (vertexBuffer.byteLength % 48 === 0) strideBytes = 48;
+            else if (vertexBuffer.byteLength % 64 === 0) strideBytes = 64;
+            else if (vertexBuffer.byteLength % 36 === 0) strideBytes = 36;
+            // Fallback to 32 if nothing matches perfectly, though this implies corrupted reading
+        }
+
+        const strideFloats = strideBytes / 4;
 
         try {
             const floatData = new Float32Array(vertexBuffer);
 
-            // We need to carefully map attributes based on the metadata
-            // For the prototype, we assume common offsets (contiguous positions)
-            geometry.setAttribute("position", new THREE.BufferAttribute(floatData, 3, true));
+            // We use THREE.InterleavedBuffer to correctly map the positions
+            // assuming the first 3 floats (x, y, z) are the position.
+            const interleavedBuffer = new THREE.InterleavedBuffer(floatData, strideFloats);
 
-            // If UVs exist in metadata (typically vertex_stride_1)
-            // geometry.setAttribute("uv", ...);
+            // Add the position attribute, reading 3 values starting at offset 0
+            geometry.setAttribute("position", new THREE.InterleavedBufferAttribute(interleavedBuffer, 3, 0, false));
 
+            // Optional: If we knew the exact layout, we could map normals and UVs here
+            // e.g., geometry.setAttribute("normal", new THREE.InterleavedBufferAttribute(interleavedBuffer, 3, 3, false));
+            // e.g., geometry.setAttribute("uv", new THREE.InterleavedBufferAttribute(interleavedBuffer, 2, 6, false));
+
+            // Compute our own normals since we only extracted positions
             geometry.computeVertexNormals();
+
+            // Center the geometry so it always appears in the middle of our scene
+            geometry.center();
+
         } catch (error) {
             console.error("[TGXLoader] Error creating geometry buffers", error);
             // Return empty geometry if parsing fails
